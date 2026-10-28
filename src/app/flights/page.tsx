@@ -1,30 +1,33 @@
 "use client";
 
 import React, { useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import PageHero from "@/components/ui/PageHero";
+import Field from "@/components/ui/Field";
 import { AUSTRALIAN_AIRPORTS, AustralianAirport } from "@/data/australianAirports";
-import { Plane, Clock, ShieldCheck, CheckCircle, ArrowRight, Luggage, Calendar, Sparkles, MapPin, Send } from "lucide-react";
+import { Plane, CheckCircle2, ArrowRight, Luggage, Send, Info, Loader2, Clock } from "lucide-react";
+import { cn, formatAUD } from "@/lib/utils";
+
+const CABINS = ["Economy", "Premium Economy", "Business"];
 
 export default function FlightsPage() {
   const [selectedCity, setSelectedCity] = useState<AustralianAirport>(AUSTRALIAN_AIRPORTS[0]);
   const [passengers, setPassengers] = useState("2");
-  const [cabinClass, setCabinClass] = useState("Economy Class");
-  const [preferredMonth, setPreferredMonth] = useState("Nov 2026");
+  const [cabinClass, setCabinClass] = useState(CABINS[0]);
 
-  // Flight inquiry form
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
   const [token, setToken] = useState("");
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
+    setError("");
 
     try {
       const res = await fetch("/api/inquiry", {
@@ -35,283 +38,172 @@ export default function FlightsPage() {
           email,
           phone,
           departureCity: `${selectedCity.city} (${selectedCity.code})`,
-          travelDates: { startDate: preferredMonth },
           travelers: { adults: Number(passengers), children: 0 },
-          tourType: "flight_only",
-          packageName: `Flight Booking: ${selectedCity.city} to Colombo (${cabinClass})`,
+          tourType: "flight",
+          packageName: `Flights: ${selectedCity.city} to Colombo (${cabinClass})`,
           estimatedBudgetAUD: selectedCity.baseFareAUD * Number(passengers),
           itinerary: [
             {
               destinationId: "colombo",
-              destinationName: `Colombo Bandaranaike International (CMB)`,
+              destinationName: "Colombo Bandaranaike International (CMB)",
               nights: 0,
-              hotelName: `${selectedCity.directToCMB ? "Direct Non-Stop Flight" : "1-Stop Connection"} with ${selectedCity.recommendedAirlines[0]}`,
+              hotelName: `${selectedCity.directToCMB ? "Direct flight" : "1-stop connection"} with ${selectedCity.recommendedAirlines[0]}`,
               roomType: cabinClass,
-              pricePerNightAUD: selectedCity.baseFareAUD,
             },
           ],
         }),
       });
-
-      const data = await res.json();
-      setToken(data.inquiryId || "FA-FL-1082");
-      setSubmitted(true);
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || "We couldn't send your request. Please try again.");
+      setToken(data.inquiryId);
     } catch (err) {
-      console.error(err);
+      setError(err instanceof Error ? err.message : "We couldn't send your request. Please try again.");
     } finally {
       setSubmitting(false);
     }
   };
 
   return (
-    <main className="min-h-screen bg-slate-50 font-sans">
+    <main className="min-h-screen bg-slate-50">
       <Navbar />
 
-      {/* Hero Header */}
-      <section className="relative pt-32 sm:pt-40 pb-20 bg-fly-navy-950 text-white overflow-hidden">
-        <div className="absolute inset-0 z-0 opacity-40">
-          <Image
-            src="https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=2000&auto=format&fit=crop"
-            alt="Sri Lanka flights from Australia"
-            fill
-            className="object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-fly-navy-950 via-fly-navy-950/70 to-transparent"></div>
-        </div>
+      <PageHero
+        eyebrow="Flights to Colombo"
+        title="Australia to Sri Lanka flights"
+        subtitle="Direct and one-stop fares with SriLankan, Singapore and Malaysia Airlines, quoted in AUD."
+        image="https://images.unsplash.com/photo-1529947327457-8f5cb53bc1b6?q=80&w=2000&auto=format&fit=crop"
+        imageAlt="Aircraft wing above the clouds"
+      />
 
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-8 text-center">
-          <div className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs sm:text-sm font-bold text-fly-cyan-200 uppercase tracking-[0.2em] mb-4">
-            <Plane className="w-4 h-4 text-fly-orange" />
-            <span>Australia to Colombo (CMB) Specialist</span>
-          </div>
-
-          <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold font-display text-white tracking-tight leading-tight uppercase">
-            Australia to Sri Lanka Flights
-          </h1>
-
-          <p className="mt-3 text-sm sm:text-base text-slate-200 max-w-xl mx-auto font-medium">
-            Direct & 1-stop wholesale fares with SriLankan Airlines, Singapore Airlines & Malaysia Airlines. Locked in AUD.
-          </p>
-        </div>
-      </section>
-
-      {/* Flight Departure City Cards */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-8 py-16 -mt-8 relative z-20">
-        <div className="bg-white rounded-3xl p-6 sm:p-10 shadow-xl border border-slate-200">
-          <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 pb-6 border-b border-slate-100 gap-4">
+      <section className="container-page relative z-10 -mt-16 pb-20">
+        <div className="card p-6 shadow-xl shadow-fly-navy/5 sm:p-10">
+          <div className="flex flex-col gap-5 border-b border-slate-100 pb-8 lg:flex-row lg:items-end lg:justify-between">
             <div>
-              <span className="text-xs font-bold uppercase tracking-[0.18em] text-fly-orange block mb-1">
-                Select Your Australian Departure City
-              </span>
-              <h2 className="text-2xl sm:text-3xl font-normal font-display text-fly-navy">
-                Compare Fares & Schedules to Colombo (CMB)
-              </h2>
+              <p className="eyebrow">Choose your departure city</p>
+              <h2 className="mt-2 text-2xl font-bold text-fly-navy-900 sm:text-3xl">Compare fares to Colombo</h2>
             </div>
-
             <div className="flex flex-wrap gap-2">
               {AUSTRALIAN_AIRPORTS.map((air) => (
                 <button
                   key={air.code}
+                  type="button"
                   onClick={() => setSelectedCity(air)}
-                  className={`px-4 py-2.5 rounded-2xl text-sm sm:text-base font-bold transition-all flex items-center space-x-2 ${
-                    selectedCity.code === air.code
-                      ? "bg-fly-navy text-white shadow-md ring-2 ring-fly-orange scale-105"
-                      : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-                  }`}
+                  aria-pressed={selectedCity.code === air.code}
+                  className={cn(
+                    "filter-pill",
+                    selectedCity.code === air.code ? "filter-pill-active" : "filter-pill-idle"
+                  )}
                 >
-                  <span>{air.city}</span>
-                  <span className="text-xs font-normal opacity-80">({air.code})</span>
-                  {air.directToCMB && <span className="w-2 h-2 rounded-full bg-emerald-400"></span>}
+                  {air.city}
+                  <span className="ml-1.5 opacity-60">{air.code}</span>
                 </button>
               ))}
             </div>
           </div>
 
-          {/* Active Departure Deep-Dive */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-            <div className="lg:col-span-7 space-y-6">
-              <div className="flex items-center space-x-3">
-                <span className="text-3xl sm:text-4xl font-normal font-display text-fly-navy">
-                  {selectedCity.name}
-                </span>
-                <span className="text-xl font-bold text-slate-400">&rarr;</span>
-                <span className="text-2xl sm:text-3xl font-normal font-display text-fly-cyan-700">
-                  Colombo (CMB)
-                </span>
+          <div className="grid grid-cols-1 gap-10 pt-8 lg:grid-cols-12">
+            <div className="space-y-8 lg:col-span-7">
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 font-display text-2xl font-bold text-fly-navy-900 sm:text-3xl">
+                <span>{selectedCity.name}</span>
+                <ArrowRight className="h-6 w-6 text-slate-300" />
+                <span className="text-fly-cyan-700">Colombo</span>
               </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 text-sm">
-                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200">
-                  <div className="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1">Flight Type</div>
-                  <div className="font-bold text-slate-900 text-base flex items-center space-x-1.5">
-                    <Plane className="w-4 h-4 text-fly-orange" />
-                    <span>{selectedCity.directToCMB ? "Non-Stop Direct" : "Fast 1-Stop"}</span>
-                  </div>
-                  <div className="text-xs text-slate-500 mt-1">{selectedCity.estFlightTime}</div>
-                </div>
-
-                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200">
-                  <div className="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1">Standard Baggage</div>
-                  <div className="font-bold text-slate-900 text-base flex items-center space-x-1.5">
-                    <Luggage className="w-4 h-4 text-fly-cyan" />
-                    <span>30kg - 40kg</span>
-                  </div>
-                  <div className="text-xs text-slate-500 mt-1">+ 7kg Carry-on included</div>
-                </div>
-
-                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 col-span-2 sm:col-span-1">
-                  <div className="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1">Starting Return Fare</div>
-                  <div className="font-black text-fly-orange text-xl sm:text-2xl font-display">
-                    ${selectedCity.baseFareAUD} <span className="text-xs font-bold text-slate-500 font-sans">AUD</span>
-                  </div>
-                  <div className="text-xs text-emerald-600 font-semibold mt-0.5">Taxes & Surcharges Incl.</div>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                <Stat icon={Plane} label="Route" value={selectedCity.directToCMB ? "Direct" : "1 stop"} note={selectedCity.estFlightTime} />
+                <Stat icon={Luggage} label="Baggage" value="30–40 kg" note="Plus 7 kg carry-on" />
+                <div className="panel p-4">
+                  <p className="text-xs text-slate-500">Return fares from</p>
+                  <p className="mt-1 font-display text-2xl font-bold text-fly-navy-900">
+                    {formatAUD(selectedCity.baseFareAUD)}
+                    <span className="text-sm font-medium text-slate-400"> AUD</span>
+                  </p>
+                  <p className="mt-0.5 text-xs text-emerald-700">Taxes included</p>
                 </div>
               </div>
 
-              {/* Partner Airlines */}
               <div>
-                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
-                  Operating Partner Airlines on this route:
-                </h4>
-                <div className="flex flex-wrap gap-2">
-                  {selectedCity.recommendedAirlines.map((airline, idx) => (
-                    <span
-                      key={idx}
-                      className="px-3.5 py-1.5 rounded-xl bg-fly-cyan-50 text-fly-cyan-900 font-semibold text-sm border border-fly-cyan-200"
-                    >
-                      ✈ {airline}
+                <p className="text-[13px] font-medium text-slate-700">Airlines on this route</p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {selectedCity.recommendedAirlines.map((airline) => (
+                    <span key={airline} className="chip">
+                      <Plane className="h-3 w-3 text-fly-cyan" />
+                      {airline}
                     </span>
                   ))}
                 </div>
               </div>
 
-              {/* Traveler Advice */}
-              <div className="p-5 rounded-2xl bg-amber-50/70 border border-amber-200 text-amber-900 text-sm space-y-2">
-                <div className="font-bold flex items-center space-x-1.5">
-                  <Sparkles className="w-4 h-4 text-fly-orange" />
-                  <span>Important for Australian Passport Holders:</span>
+              <div className="flex gap-3 rounded-2xl border border-fly-cyan-200 bg-fly-cyan-50/60 p-5">
+                <Info className="mt-0.5 h-5 w-5 shrink-0 text-fly-cyan-700" />
+                <div className="text-sm leading-relaxed text-slate-600">
+                  <p className="font-semibold text-fly-navy-900">Travelling on an Australian passport?</p>
+                  <p className="mt-1">
+                    You&rsquo;ll need a Sri Lankan ETA before you board and at least six months&rsquo; passport validity. We
+                    check visa requirements when we issue your tickets.
+                  </p>
                 </div>
-                <p className="text-xs sm:text-sm leading-relaxed text-amber-800 font-light">
-                  Australians require a valid tourist Electronic Travel Authorization (ETA / eVisa) before boarding. Your passport must have at least 6 months validity from departure. Our Fly Amazing concierge manages visa pre-checks with your flight ticket issuance.
-                </p>
               </div>
             </div>
 
-            {/* Right Column: Quick Flight Ticket Request Form */}
-            <div className="lg:col-span-5 bg-slate-50 p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-md">
-              <h3 className="text-xl sm:text-2xl font-normal font-display text-fly-navy mb-2">
-                Request an Official Flight Quote
-              </h3>
-              <p className="text-xs sm:text-sm text-slate-600 font-light mb-6">
-                Receive the best available wholesale flight fares held for 48 hours with zero obligation.
+            <div className="panel p-6 sm:p-8 lg:col-span-5">
+              <h3 className="text-xl font-bold text-fly-navy-900">Get a flight quote</h3>
+              <p className="mt-1.5 text-sm text-slate-500">
+                We&rsquo;ll find the best available fare and hold it for 48 hours, with no obligation.
               </p>
 
-              {submitted ? (
-                <div className="p-6 bg-emerald-50 rounded-2xl border border-emerald-200 text-center space-y-3">
-                  <CheckCircle className="w-12 h-12 text-emerald-600 mx-auto" />
-                  <h4 className="font-bold text-emerald-900 text-lg">Quote Request Received!</h4>
-                  <p className="text-sm text-emerald-800 font-light">
-                    Reference: <strong>{token}</strong>
+              {token ? (
+                <div className="mt-6 rounded-2xl border border-emerald-200 bg-white p-6 text-center">
+                  <CheckCircle2 className="mx-auto h-10 w-10 text-emerald-600" />
+                  <h4 className="mt-3 text-lg font-semibold text-slate-900">Request received</h4>
+                  <p className="mt-1 text-sm text-slate-500">
+                    Reference <span className="font-semibold text-fly-navy-900">{token}</span>
                   </p>
-                  <p className="text-xs text-emerald-700">
-                    Dispatched to admin (yasithvidusara@gmail.com). Our flight desk will email your exact flight itinerary within 2 hours.
-                  </p>
+                  <p className="mt-3 text-sm text-slate-500">Our flight desk will email your options within 2 business hours.</p>
                 </div>
               ) : (
-                <form onSubmit={handleSubmit} className="space-y-4 text-sm">
-                  <div>
-                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
-                      Lead Passenger Name *
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      placeholder="e.g. Liam Smith"
-                      className="w-full p-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-fly-cyan bg-white text-sm"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
-                        Email Address *
-                      </label>
-                      <input
-                        type="email"
-                        required
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="liam@gmail.com"
-                        className="w-full p-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-fly-cyan bg-white text-sm"
-                      />
+                <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+                  {error && (
+                    <div role="alert" className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                      {error}
                     </div>
-                    <div>
-                      <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
-                        Mobile Phone *
-                      </label>
-                      <input
-                        type="tel"
-                        required
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                        placeholder="0412 345 678"
-                        className="w-full p-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-fly-cyan bg-white text-sm"
-                      />
-                    </div>
+                  )}
+                  <Field id="fl-name" label="Full name">
+                    <input id="fl-name" type="text" required autoComplete="name" value={name} onChange={(e) => setName(e.target.value)} className="field-input" />
+                  </Field>
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <Field id="fl-email" label="Email">
+                      <input id="fl-email" type="email" required autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} className="field-input" />
+                    </Field>
+                    <Field id="fl-phone" label="Mobile">
+                      <input id="fl-phone" type="tel" required autoComplete="tel" placeholder="04xx xxx xxx" value={phone} onChange={(e) => setPhone(e.target.value)} className="field-input" />
+                    </Field>
                   </div>
-
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
-                        Cabin Class
-                      </label>
-                      <select
-                        value={cabinClass}
-                        onChange={(e) => setCabinClass(e.target.value)}
-                        className="w-full p-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-fly-cyan bg-white text-sm"
-                      >
-                        <option value="Economy Class">Economy Class</option>
-                        <option value="Premium Economy">Premium Economy</option>
-                        <option value="Business Class">Business Class</option>
+                  <div className="grid grid-cols-2 gap-4">
+                    <Field id="fl-cabin" label="Cabin">
+                      <select id="fl-cabin" value={cabinClass} onChange={(e) => setCabinClass(e.target.value)} className="field-input cursor-pointer">
+                        {CABINS.map((c) => (
+                          <option key={c}>{c}</option>
+                        ))}
                       </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
-                        Passengers
-                      </label>
-                      <select
-                        value={passengers}
-                        onChange={(e) => setPassengers(e.target.value)}
-                        className="w-full p-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-fly-cyan bg-white text-sm"
-                      >
+                    </Field>
+                    <Field id="fl-pax" label="Passengers">
+                      <select id="fl-pax" value={passengers} onChange={(e) => setPassengers(e.target.value)} className="field-input cursor-pointer">
                         {[1, 2, 3, 4, 5, 6].map((n) => (
                           <option key={n} value={n}>
-                            {n} Passenger{n > 1 ? "s" : ""}
+                            {n}
                           </option>
                         ))}
                       </select>
-                    </div>
+                    </Field>
                   </div>
-
-                  <button
-                    type="submit"
-                    disabled={submitting}
-                    className="w-full py-4 rounded-2xl bg-gradient-to-r from-fly-orange to-fly-orange-600 hover:from-fly-orange-600 hover:to-fly-orange text-white font-bold text-base shadow-xl shadow-fly-orange/30 transition flex items-center justify-center space-x-2"
-                  >
-                    {submitting ? (
-                      <span>Sending Request...</span>
-                    ) : (
-                      <>
-                        <Send className="w-4 h-4" />
-                        <span>Request Guaranteed Fare Quote</span>
-                      </>
-                    )}
+                  <button type="submit" disabled={submitting} className="btn-primary btn-lg w-full">
+                    {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                    {submitting ? "Sending…" : "Request my quote"}
                   </button>
-                  <p className="text-[11px] text-center text-slate-400">
-                    🔒 Zero commitment &bull; Sent directly to admin: yasithvidusara@gmail.com
+                  <p className="flex items-center justify-center gap-1.5 text-xs text-slate-400">
+                    <Clock className="h-3.5 w-3.5" />
+                    Reply within 2 business hours
                   </p>
                 </form>
               )}
@@ -320,39 +212,43 @@ export default function FlightsPage() {
         </div>
       </section>
 
-      {/* Bundle & Save CTA Banner */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-8 pb-20">
-        <div className="rounded-3xl bg-gradient-to-r from-fly-navy to-fly-cyan p-8 sm:p-12 text-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xl">
-          <div className="space-y-2">
-            <span className="text-xs font-bold uppercase tracking-[0.2em] text-fly-cyan-200">
-              Complete Travel Solution
-            </span>
-            <h3 className="text-2xl sm:text-4xl font-normal font-display text-white">
-              Bundle Your Flights with a Bespoke Sri Lanka Tour.
-            </h3>
-            <p className="text-sm sm:text-base text-slate-200 font-light max-w-xl">
-              Save up to 25% when you bundle international return flights with our handpicked 4 to 5-star boutique hotels and private chauffeured travel.
-            </p>
-          </div>
-
-          <div className="flex flex-wrap gap-3">
-            <Link
-              href="/packages"
-              className="px-6 py-3.5 rounded-full bg-white text-fly-navy font-bold text-sm sm:text-base hover:bg-slate-100 transition shadow-lg"
-            >
-              View Curated Packages
-            </Link>
-            <Link
-              href="/tour-architect"
-              className="px-6 py-3.5 rounded-full bg-fly-orange text-white font-bold text-sm sm:text-base hover:bg-fly-orange-600 transition shadow-lg"
-            >
-              Build Custom Tour
-            </Link>
+      <section className="container-page pb-24">
+        <div className="relative overflow-hidden rounded-3xl bg-fly-navy-900 p-8 text-white sm:p-12">
+          <div className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full bg-fly-cyan/25 blur-3xl" />
+          <div className="relative flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
+            <div className="max-w-xl">
+              <p className="eyebrow-light">Flights + tour</p>
+              <h3 className="mt-3 text-2xl font-bold sm:text-3xl">Bundle your flights with a Sri Lanka tour</h3>
+              <p className="mt-3 text-slate-300">
+                Save up to 25% when you combine return flights with handpicked hotels and a private chauffeur.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <Link href="/packages" className="btn-glass btn-lg">
+                View packages
+              </Link>
+              <Link href="/tour-architect" className="btn-primary btn-lg">
+                Build a custom tour
+              </Link>
+            </div>
           </div>
         </div>
       </section>
 
       <Footer />
     </main>
+  );
+}
+
+function Stat({ icon: Icon, label, value, note }: { icon: typeof Plane; label: string; value: string; note: string }) {
+  return (
+    <div className="panel p-4">
+      <p className="text-xs text-slate-500">{label}</p>
+      <p className="mt-1 flex items-center gap-2 text-lg font-semibold text-slate-900">
+        <Icon className="h-4 w-4 text-fly-orange" />
+        {value}
+      </p>
+      <p className="mt-0.5 text-xs text-slate-500">{note}</p>
+    </div>
   );
 }

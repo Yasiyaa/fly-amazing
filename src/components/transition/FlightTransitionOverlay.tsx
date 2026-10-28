@@ -1,30 +1,63 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
+const SEEN_KEY = "fa-intro-seen";
+const INTRO_MS = 1900;
+
+// Layout effect on the client so repeat visits hide the curtain before first paint
+const useIsomorphicLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : useEffect;
+
+const curtainVariants = {
+  exit: (instant: boolean) =>
+    instant
+      ? { opacity: 0, transition: { duration: 0 } }
+      : { y: "-100%", transition: { duration: 0.55, ease: [0.76, 0, 0.24, 1] } },
+};
+
+/**
+ * Brand intro curtain. Plays the full flight animation once per browser session;
+ * later route changes skip it so navigation feels instant.
+ */
 export default function FlightTransitionOverlay() {
   const [isVisible, setIsVisible] = useState(true);
+  const [instant, setInstant] = useState(false);
 
-  useEffect(() => {
-    // Flight duration ~1.8s, then slide the orange curtain up
+  useIsomorphicLayoutEffect(() => {
+    let seen = false;
+    try {
+      seen = sessionStorage.getItem(SEEN_KEY) === "1";
+    } catch {
+      // Storage unavailable (private mode): fall back to playing the intro
+    }
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    if (seen || reduceMotion) {
+      setInstant(true);
+      setIsVisible(false);
+      return;
+    }
     const timer = setTimeout(() => {
       setIsVisible(false);
-    }, 1900);
-
+      try {
+        sessionStorage.setItem(SEEN_KEY, "1");
+      } catch {
+        // ignore
+      }
+    }, INTRO_MS);
     return () => clearTimeout(timer);
   }, []);
 
   return (
-    <AnimatePresence mode="wait">
+    <AnimatePresence mode="wait" custom={instant}>
       {isVisible && (
         <motion.div
           key="flight-curtain"
           initial={{ y: 0, opacity: 1 }}
-          exit={{
-            y: "-100%",
-            transition: { duration: 0.55, ease: [0.76, 0, 0.24, 1] },
-          }}
+          variants={curtainVariants}
+          exit="exit"
+          aria-hidden="true"
           className="fixed inset-0 z-[99999] flex flex-col items-center justify-center bg-gradient-to-br from-[#E66017] via-[#F26E20] to-[#CF530F] text-white overflow-hidden pointer-events-auto select-none"
         >
           {/* Subtle Ambient Radial Lighting */}
@@ -37,7 +70,7 @@ export default function FlightTransitionOverlay() {
               initial={{ x: "105vw", y: "22vh" }}
               animate={{ x: "-35vw" }}
               transition={{ duration: 2.2, ease: "linear" }}
-              className="absolute w-72 h-24 bg-white/12 rounded-full blur-xl"
+              className="absolute w-72 h-24 bg-white/10 rounded-full blur-xl"
             />
             {/* Cloud 2 */}
             <motion.div
@@ -187,12 +220,12 @@ export default function FlightTransitionOverlay() {
               className="space-y-2.5"
             >
               {/* Slogan Pill */}
-              <div className="inline-flex items-center space-x-2 px-5 py-1.5 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-xs sm:text-sm font-bold tracking-[0.25em] uppercase text-white shadow-lg">
+              <div className="inline-flex items-center rounded-full border border-white/30 bg-white/20 px-5 py-1.5 text-xs font-semibold uppercase tracking-[0.25em] text-white shadow-lg backdrop-blur-md sm:text-sm">
                 <span>fly cheaper &bull; fly smarter</span>
               </div>
 
-              <div className="text-xl sm:text-3xl font-display font-extrabold tracking-tight text-white drop-shadow-md">
-                Flying You to Sri Lanka...
+              <div className="text-xl sm:text-3xl font-display font-bold tracking-tight text-white drop-shadow-md">
+                Flying you to Sri Lanka
               </div>
 
               {/* Progress Indicator Bar */}

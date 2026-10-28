@@ -2,18 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 15, 23, 42;
-  --background-start-rgb: 255, 255, 255;
-  --background-end-rgb: 248, 250, 252;
-}
-
 @layer base {
   html {
     scroll-behavior: initial;
+    -webkit-tap-highlight-color: transparent;
   }
 
-  html.lenis, html.lenis body {
+  html.lenis,
+  html.lenis body {
     height: auto;
   }
 
@@ -34,76 +30,182 @@
   }
 
   body {
-    color: rgb(var(--foreground-rgb));
-    background: #ffffff;
-    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    @apply bg-white text-slate-700;
     font-size: 15px;
-    line-height: 1.5;
-    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    line-height: 1.6;
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
 
-  h1, h2, h3, h4, h5, h6, .font-display {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    letter-spacing: -0.025em;
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-display text-balance;
+    letter-spacing: -0.02em;
+  }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-fly-cyan ring-offset-2 ring-offset-white;
+  }
+
+  ::selection {
+    @apply bg-fly-cyan text-white;
+  }
+}
+
+@layer components {
+  /* Layout */
+  .container-page {
+    @apply mx-auto w-full max-w-7xl px-5 sm:px-8;
+  }
+
+  .section {
+    @apply py-20 sm:py-28;
+  }
+
+  /* Type */
+  .eyebrow {
+    @apply inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-fly-cyan-700;
+  }
+
+  .eyebrow-light {
+    @apply inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-fly-cyan-200;
+  }
+
+  .heading-section {
+    @apply font-display text-3xl font-bold leading-[1.1] tracking-tight text-fly-navy-900 sm:text-4xl lg:text-[2.75rem];
+  }
+
+  .heading-section-light {
+    @apply font-display text-3xl font-bold leading-[1.1] tracking-tight text-white sm:text-4xl lg:text-[2.75rem];
+  }
+
+  .lede {
+    @apply text-base leading-relaxed text-slate-500 sm:text-lg;
+  }
+
+  /* Buttons */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full px-6 py-3 text-sm font-semibold transition-all duration-200 disabled:pointer-events-none disabled:opacity-60;
+  }
+
+  .btn-sm {
+    @apply px-4 py-2 text-[13px];
+  }
+
+  .btn-lg {
+    @apply px-7 py-3.5 text-[15px];
+  }
+
+  .btn-primary {
+    @apply btn bg-fly-orange text-white shadow-sm shadow-fly-orange/25 hover:bg-fly-orange-600 hover:shadow-md hover:shadow-fly-orange/30;
+  }
+
+  .btn-navy {
+    @apply btn bg-fly-navy text-white hover:bg-fly-navy-700;
+  }
+
+  .btn-secondary {
+    @apply btn border border-slate-200 bg-white text-fly-navy hover:border-fly-navy/30 hover:bg-slate-50;
+  }
+
+  .btn-glass {
+    @apply btn border border-white/25 bg-white/10 text-white backdrop-blur-md hover:bg-white/20;
+  }
+
+  /* Surfaces */
+  .card {
+    @apply rounded-2xl border border-slate-200/80 bg-white shadow-sm;
+  }
+
+  .card-interactive {
+    @apply card transition-all duration-300 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-xl hover:shadow-fly-navy/5;
+  }
+
+  .panel {
+    @apply rounded-2xl border border-slate-200/80 bg-slate-50;
+  }
+
+  /* Chips & badges */
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-medium text-slate-600;
+  }
+
+  .chip-glass {
+    @apply inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-black/35 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-white backdrop-blur-md;
+  }
+
+  .badge-accent {
+    @apply inline-flex items-center rounded-full bg-fly-orange px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-white;
+  }
+
+  .filter-pill {
+    @apply inline-flex items-center rounded-full border px-4 py-2 text-[13px] font-medium transition-colors;
+  }
+
+  .filter-pill-active {
+    @apply border-fly-navy bg-fly-navy text-white;
+  }
+
+  .filter-pill-idle {
+    @apply border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:text-fly-navy;
+  }
+
+  /* Forms */
+  .field-label {
+    @apply mb-1.5 block text-[13px] font-medium text-slate-700;
+  }
+
+  .field-input {
+    @apply w-full rounded-xl border border-slate-200 bg-white px-3.5 py-3 text-sm text-slate-800 placeholder:text-slate-400 transition focus:border-fly-cyan focus:outline-none focus:ring-4 focus:ring-fly-cyan/15;
+  }
+
+  /* Overlay readability */
+  .scrim-bottom {
+    @apply bg-gradient-to-t from-black/80 via-black/25 to-transparent;
   }
 }
 
 @layer utilities {
-  .text-glow {
-    text-shadow: 0 0 24px rgba(1, 164, 169, 0.45);
-  }
-  
-  .text-glow-orange {
-    text-shadow: 0 0 24px rgba(230, 96, 23, 0.45);
+  .no-scrollbar {
+    scrollbar-width: none;
   }
 
-  .glass-card {
-    background: rgba(255, 255, 255, 0.88);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.6);
-  }
-
-  .glass-card-dark {
-    background: rgba(3, 63, 126, 0.85);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-  }
-
-  .glass-pill {
-    background: rgba(255, 255, 255, 0.92);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(226, 232, 240, 0.8);
-  }
-
-  .text-shadow-sm {
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
-  }
-  
-  .text-shadow-lg {
-    text-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
   }
 }
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 10px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: #f8fafc;
 }
 
 ::-webkit-scrollbar-thumb {
   background: #cbd5e1;
+  border: 2px solid #f8fafc;
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #01A4A9;
+  background: #94a3b8;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

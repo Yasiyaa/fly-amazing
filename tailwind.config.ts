@@ -53,9 +53,8 @@ const config: Config = {
         },
       },
       fontFamily: {
-        sans: ['"Plus Jakarta Sans"', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'sans-serif'],
-        display: ['"Outfit"', '"Plus Jakarta Sans"', 'sans-serif'],
-        heading: ['"Outfit"', 'sans-serif'],
+        sans: ["var(--font-jakarta)", "-apple-system", "BlinkMacSystemFont", '"Segoe UI"', "Roboto", "sans-serif"],
+        display: ["var(--font-outfit)", "var(--font-jakarta)", "sans-serif"],
       },
       letterSpacing: {
         widest: ".2em",

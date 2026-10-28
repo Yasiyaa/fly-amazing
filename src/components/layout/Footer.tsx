@@ -1,200 +1,132 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ShieldCheck, Phone, Mail, MapPin, Award, HeartHandshake, Plane } from "lucide-react";
+import { ShieldCheck, Phone, Mail, MapPin, Award, HeartHandshake } from "lucide-react";
+import { CURATED_PACKAGES } from "@/data/packages";
+import { AUSTRALIAN_AIRPORTS } from "@/data/australianAirports";
+
+const PILLARS = [
+  {
+    icon: ShieldCheck,
+    title: "Australian consumer protection",
+    body: "Airfares, hotels and touring are booked to Australian consumer travel standards.",
+  },
+  {
+    icon: Award,
+    title: "Direct airline contracts",
+    body: "Wholesale seat allocations with SriLankan, Singapore and Malaysia Airlines into Colombo.",
+  },
+  {
+    icon: HeartHandshake,
+    title: "Private chauffeur included",
+    body: "Every tour includes a private air-conditioned vehicle and an English-speaking guide.",
+  },
+];
 
 export default function Footer() {
   return (
-    <footer className="bg-fly-navy-950 text-white pt-20 pb-12 border-t border-white/10 relative overflow-hidden font-sans">
-      {/* Subtle atmospheric glow matching logo colors */}
-      <div className="absolute top-0 right-1/4 w-96 h-96 bg-fly-cyan/10 rounded-full blur-3xl pointer-events-none"></div>
-      <div className="absolute bottom-0 left-10 w-80 h-80 bg-fly-orange/10 rounded-full blur-3xl pointer-events-none"></div>
+    <footer className="relative overflow-hidden bg-fly-navy-950 text-slate-300">
+      <div className="pointer-events-none absolute -top-40 right-0 h-96 w-96 rounded-full bg-fly-cyan/10 blur-3xl" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-8 relative z-10">
-        {/* Top Trust Pillars Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 pb-12 border-b border-white/10">
-          <div className="flex items-start space-x-3.5 p-5 rounded-2xl bg-white/5 border border-white/5 backdrop-blur-sm">
-            <div className="p-2.5 rounded-xl bg-fly-cyan/20 text-fly-cyan-300 flex-shrink-0">
-              <ShieldCheck className="w-5 h-5" />
+      <div className="container-page relative">
+        {/* Trust pillars */}
+        <div className="grid grid-cols-1 gap-8 border-b border-white/10 py-14 md:grid-cols-3">
+          {PILLARS.map(({ icon: Icon, title, body }) => (
+            <div key={title} className="flex gap-4">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white/5 ring-1 ring-white/10">
+                <Icon className="h-5 w-5 text-fly-cyan-300" />
+              </div>
+              <div>
+                <h3 className="text-base font-semibold text-white">{title}</h3>
+                <p className="mt-1 text-sm leading-relaxed text-slate-400">{body}</p>
+              </div>
             </div>
-            <div>
-              <h4 className="font-bold text-white text-base font-display">Australian Consumer Protection</h4>
-              <p className="text-xs sm:text-sm text-slate-300 mt-1 leading-relaxed font-light">
-                Book with total confidence. All international airfares, boutique hotels, and chauffeured tours strictly comply with Australian consumer travel standards.
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-start space-x-3.5 p-5 rounded-2xl bg-white/5 border border-white/5 backdrop-blur-sm">
-            <div className="p-2.5 rounded-xl bg-fly-orange/20 text-fly-orange-300 flex-shrink-0">
-              <Award className="w-5 h-5" />
-            </div>
-            <div>
-              <h4 className="font-bold text-white text-base font-display">Direct Airline Contracts</h4>
-              <p className="text-xs sm:text-sm text-slate-300 mt-1 leading-relaxed font-light">
-                Direct partnerships with SriLankan Airlines, Singapore Airlines, and Malaysia Airlines, securing unbeatable wholesale seat allocations into Colombo (CMB).
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-start space-x-3.5 p-5 rounded-2xl bg-white/5 border border-white/5 backdrop-blur-sm">
-            <div className="p-2.5 rounded-xl bg-fly-cyan/20 text-fly-cyan-300 flex-shrink-0">
-              <HeartHandshake className="w-5 h-5" />
-            </div>
-            <div>
-              <h4 className="font-bold text-white text-base font-display">Private Chauffeur Included</h4>
-              <p className="text-xs sm:text-sm text-slate-300 mt-1 leading-relaxed font-light">
-                No crowded buses. Every bespoke booking includes a private, modern air-conditioned vehicle with a certified, English-speaking personal guide.
-              </p>
-            </div>
-          </div>
+          ))}
         </div>
 
-        {/* Navigation & Details Columns */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 py-12 border-b border-white/10">
-          {/* Brand Info */}
-          <div className="lg:col-span-2 space-y-3.5">
-            <div className="relative h-11 w-44 bg-white/95 rounded-lg p-1.5 inline-block">
-              <Image
-                src="/logo.jpeg"
-                alt="Fly Amazing - fly cheaper, fly smarter"
-                fill
-                className="object-contain"
-              />
+        {/* Link columns */}
+        <div className="grid grid-cols-1 gap-10 py-14 sm:grid-cols-2 lg:grid-cols-12">
+          <div className="lg:col-span-4">
+            <div className="inline-flex rounded-xl bg-white px-4 py-3">
+              <div className="relative h-9 w-[125px]">
+                <Image src="/logo.png" alt="Fly Amazing" fill sizes="125px" className="object-contain" />
+              </div>
             </div>
-            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-sm font-light">
-              Australia’s specialist travel platform offering seamless air ticket booking and bespoke tailor-made luxury tours to Sri Lanka. From the misty tea hills of Nuwara Eliya to the leopard kingdoms of Yala.
+            <p className="mt-5 max-w-sm text-sm leading-relaxed text-slate-400">
+              Australia&rsquo;s Sri Lanka specialist: return flights from five capital cities and tailor-made holidays from the
+              tea hills of Nuwara Eliya to the leopard country of Yala.
             </p>
-
-            <div className="space-y-2 pt-1 text-xs sm:text-sm text-slate-200">
-              <div className="flex items-center space-x-2.5">
-                <Phone className="w-3.5 h-3.5 text-fly-orange flex-shrink-0" />
-                <span>Australia Toll-Free: <strong>1300 FLY AMZ (1300 359 269)</strong></span>
-              </div>
-              <div className="flex items-center space-x-2.5">
-                <Mail className="w-3.5 h-3.5 text-fly-cyan flex-shrink-0" />
-                <span>Inquiries: <strong>bookings@flyamazing.com.au</strong></span>
-              </div>
-              <div className="flex items-center space-x-2.5">
-                <MapPin className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
-                <span>Australian Concierge: Melbourne &bull; Sydney &bull; Colombo</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Australian Departures */}
-          <div>
-            <h5 className="font-bold text-xs uppercase tracking-wider mb-3 text-fly-cyan-300">
-              Departures to CMB
-            </h5>
-            <ul className="space-y-2.5 text-xs sm:text-sm text-slate-300 font-light">
+            <ul className="mt-6 space-y-3 text-sm">
               <li>
-                <Link href="/flights" className="hover:text-fly-cyan transition flex items-center space-x-1.5">
-                  <Plane className="w-3 h-3 text-fly-orange" />
-                  <span>Melbourne (MEL) Direct</span>
-                </Link>
+                <a href="tel:1300359269" className="inline-flex items-center gap-3 transition-colors hover:text-white">
+                  <Phone className="h-4 w-4 shrink-0 text-fly-orange" />
+                  1300 359 269 <span className="text-slate-500">(1300 FLY AMZ)</span>
+                </a>
               </li>
               <li>
-                <Link href="/flights" className="hover:text-fly-cyan transition flex items-center space-x-1.5">
-                  <Plane className="w-3 h-3 text-fly-orange" />
-                  <span>Sydney (SYD) Direct</span>
-                </Link>
+                <a
+                  href="mailto:bookings@flyamazing.com.au"
+                  className="inline-flex items-center gap-3 transition-colors hover:text-white"
+                >
+                  <Mail className="h-4 w-4 shrink-0 text-fly-orange" />
+                  bookings@flyamazing.com.au
+                </a>
               </li>
-              <li>
-                <Link href="/flights" className="hover:text-fly-cyan transition flex items-center space-x-1.5">
-                  <Plane className="w-3 h-3 text-fly-cyan" />
-                  <span>Brisbane (BNE) 1-Stop</span>
-                </Link>
-              </li>
-              <li>
-                <Link href="/flights" className="hover:text-fly-cyan transition flex items-center space-x-1.5">
-                  <Plane className="w-3 h-3 text-fly-cyan" />
-                  <span>Perth (PER) 1-Stop</span>
-                </Link>
-              </li>
-              <li>
-                <Link href="/flights" className="hover:text-fly-cyan transition flex items-center space-x-1.5">
-                  <Plane className="w-3 h-3 text-fly-cyan" />
-                  <span>Adelaide (ADL) 1-Stop</span>
-                </Link>
+              <li className="flex items-center gap-3">
+                <MapPin className="h-4 w-4 shrink-0 text-fly-orange" />
+                Melbourne &middot; Sydney &middot; Colombo
               </li>
             </ul>
           </div>
 
-          {/* Sri Lanka Highlights */}
-          <div>
-            <h5 className="font-bold text-xs uppercase tracking-wider mb-3 text-fly-orange-300">
-              Curated Circuits
-            </h5>
-            <ul className="space-y-2.5 text-xs sm:text-sm text-slate-300 font-light">
-              <li>
-                <Link href="/packages/emerald-highland-tea-odyssey" className="hover:text-white transition">
-                  Ceylon Tea & Scenic Train Odyssey
-                </Link>
-              </li>
-              <li>
-                <Link href="/packages/wild-serendib-safari-ocean-giants" className="hover:text-white transition">
-                  Wild Serendib & Leopard Safari
-                </Link>
-              </li>
-              <li>
-                <Link href="/packages/kingdoms-of-stone-golden-sands" className="hover:text-white transition">
-                  Kingdoms of Stone & Golden Sands
-                </Link>
-              </li>
-              <li>
-                <Link href="/packages/grand-celestial-ceylon-panorama" className="hover:text-white transition">
-                  The Grand Celestial Panorama (15D)
-                </Link>
-              </li>
-              <li>
-                <Link href="/packages/tropical-drift-surf-spice-sunset-forts" className="hover:text-white transition">
-                  Southern Beach Villas & Surf
-                </Link>
-              </li>
-            </ul>
-          </div>
+          <FooterColumn title="Fly from" className="lg:col-span-2">
+            {AUSTRALIAN_AIRPORTS.map((a) => (
+              <FooterLink key={a.code} href="/flights">
+                {a.city} ({a.code})
+              </FooterLink>
+            ))}
+          </FooterColumn>
 
-          {/* Bespoke Tools */}
-          <div>
-            <h5 className="font-bold text-xs uppercase tracking-wider mb-3 text-fly-cyan-300">
-              Tailor-Made Travel
-            </h5>
-            <ul className="space-y-2.5 text-xs sm:text-sm text-slate-300 font-light">
-              <li>
-                <Link href="/tour-architect" className="text-fly-orange font-semibold hover:underline flex items-center space-x-1">
-                  <span>🛠️ Tour Architect Studio</span>
-                </Link>
-              </li>
-              <li>
-                <Link href="/destinations" className="hover:text-white transition">
-                  Sri Lanka Destination Guide
-                </Link>
-              </li>
-              <li>
-                <Link href="/flights" className="hover:text-white transition">
-                  Compare Australian Airfares
-                </Link>
-              </li>
-              <li>
-                <Link href="/contact" className="hover:text-white transition">
-                  Talk to an Australian Specialist
-                </Link>
-              </li>
-            </ul>
-          </div>
+          <FooterColumn title="Curated packages" className="lg:col-span-4">
+            {CURATED_PACKAGES.map((p) => (
+              <FooterLink key={p.id} href={`/packages/${p.id}`}>
+                {p.title}
+              </FooterLink>
+            ))}
+          </FooterColumn>
+
+          <FooterColumn title="Plan" className="lg:col-span-2">
+            <FooterLink href="/tour-architect">Tour Architect</FooterLink>
+            <FooterLink href="/destinations">Destination guide</FooterLink>
+            <FooterLink href="/flights">Compare airfares</FooterLink>
+            <FooterLink href="/contact">Talk to a specialist</FooterLink>
+          </FooterColumn>
         </div>
 
-        {/* Bottom Bar */}
-        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs sm:text-sm text-slate-400 space-y-4 sm:space-y-0 font-light">
-          <p>© {new Date().getFullYear()} Fly Amazing Australia Pty Ltd. Slogan: &ldquo;fly cheaper, fly smarter&rdquo;.</p>
-          <div className="flex items-center space-x-6">
-            <span>Australian Business Standard</span>
-            <span>Privacy Policy</span>
-            <span>Terms & Conditions</span>
-          </div>
+        <div className="flex flex-col gap-3 border-t border-white/10 py-8 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between">
+          <p>&copy; {new Date().getFullYear()} Fly Amazing Australia Pty Ltd. All prices in AUD.</p>
+          <p className="font-medium tracking-wide text-slate-400">fly cheaper &middot; fly smarter</p>
         </div>
       </div>
     </footer>
+  );
+}
+
+function FooterColumn({ title, className, children }: { title: string; className?: string; children: React.ReactNode }) {
+  return (
+    <div className={className}>
+      <h3 className="text-xs font-semibold uppercase tracking-[0.18em] text-white">{title}</h3>
+      <ul className="mt-5 space-y-3 text-sm">{children}</ul>
+    </div>
+  );
+}
+
+function FooterLink({ href, children }: { href: string; children: React.ReactNode }) {
+  return (
+    <li>
+      <Link href={href} className="text-slate-400 transition-colors hover:text-white">
+        {children}
+      </Link>
+    </li>
   );
 }

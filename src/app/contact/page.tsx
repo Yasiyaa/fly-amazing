@@ -1,10 +1,34 @@
 "use client";
 
 import React, { useState } from "react";
-import Image from "next/image";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import { Phone, Mail, MapPin, Clock, ShieldCheck, CheckCircle, Send, Sparkles } from "lucide-react";
+import PageHero from "@/components/ui/PageHero";
+import Field from "@/components/ui/Field";
+import { Phone, Mail, MapPin, CheckCircle2, Send, Loader2, ArrowUpRight } from "lucide-react";
+
+const CHANNELS = [
+  {
+    icon: Phone,
+    label: "Call us",
+    value: "1300 359 269",
+    note: "Mon–Sat, 8:30am–7:30pm AEST",
+    href: "tel:1300359269",
+  },
+  {
+    icon: Mail,
+    label: "Email",
+    value: "bookings@flyamazing.com.au",
+    note: "We reply within 2 business hours",
+    href: "mailto:bookings@flyamazing.com.au",
+  },
+  {
+    icon: MapPin,
+    label: "Offices",
+    value: "Melbourne · Sydney · Colombo",
+    note: "Australian-registered travel agency",
+  },
+];
 
 export default function ContactPage() {
   const [name, setName] = useState("");
@@ -12,12 +36,13 @@ export default function ContactPage() {
   const [phone, setPhone] = useState("");
   const [message, setMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
   const [token, setToken] = useState("");
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
+    setError("");
 
     try {
       const res = await fetch("/api/inquiry", {
@@ -27,214 +52,117 @@ export default function ContactPage() {
           fullName: name,
           email,
           phone,
-          departureCity: "Australian Consultation Request",
-          tourType: "general_inquiry",
-          packageName: "General Traveler Consultation",
+          tourType: "general",
+          packageName: "General enquiry",
           specialRequests: message,
-          estimatedBudgetAUD: 0,
           itinerary: [],
         }),
       });
-
-      const data = await res.json();
-      setToken(data.inquiryId || "FA-INQ-1089");
-      setSubmitted(true);
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || "We couldn't send your message. Please try again.");
+      setToken(data.inquiryId);
     } catch (err) {
-      console.error(err);
+      setError(err instanceof Error ? err.message : "We couldn't send your message. Please try again.");
     } finally {
       setSubmitting(false);
     }
   };
 
   return (
-    <main className="min-h-screen bg-slate-50 font-sans">
+    <main className="min-h-screen bg-slate-50">
       <Navbar />
 
-      {/* Hero Header */}
-      <section className="relative pt-32 sm:pt-40 pb-20 bg-fly-navy-950 text-white overflow-hidden">
-        <div className="absolute inset-0 z-0 opacity-40">
-          <Image
-            src="https://images.unsplash.com/photo-1578632767115-351597cf2477?q=80&w=2000&auto=format&fit=crop"
-            alt="Fly Amazing Australian Concierge"
-            fill
-            className="object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-fly-navy-950 via-fly-navy-950/70 to-transparent"></div>
-        </div>
+      <PageHero
+        eyebrow="Contact"
+        title="Talk to a Sri Lanka specialist"
+        subtitle="Tell us your dates, who's travelling and what you'd love to see. We'll come back with a tailored proposal."
+        image="https://images.unsplash.com/photo-1559038298-ef4eecdfdbb3?q=80&w=2000&auto=format&fit=crop"
+        imageAlt="Tea plantation hills in Sri Lanka"
+      />
 
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-8 text-center">
-          <div className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs sm:text-sm font-bold text-fly-cyan-200 uppercase tracking-[0.2em] mb-4">
-            <Phone className="w-4 h-4 text-fly-orange" />
-            <span>Australian Dedicated Support</span>
-          </div>
-
-          <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold font-display text-white tracking-tight leading-tight uppercase">
-            Contact Australian Concierge
-          </h1>
-
-          <p className="mt-3 text-sm sm:text-base text-slate-200 max-w-xl mx-auto font-medium">
-            Direct hotline 1300 FLY AMZ (1300 359 269) &amp; tailored holiday consultations. Melbourne &amp; Sydney.
-          </p>
-        </div>
-      </section>
-
-      {/* Main Contact Grid */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-8 py-16 -mt-8 relative z-20">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* Left Column: Direct Phone & Trust Cards (5 cols) */}
-          <div className="lg:col-span-5 space-y-6">
-            <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-xl space-y-6">
-              <h3 className="text-2xl font-display text-fly-navy font-normal">
-                Direct Contact Channels
-              </h3>
-
-              <div className="space-y-4">
-                <a
-                  href="tel:1300359269"
-                  className="flex items-start space-x-4 p-4 rounded-2xl bg-fly-navy-50/60 border border-fly-navy-100 hover:border-fly-orange transition group"
-                >
-                  <div className="p-3 rounded-xl bg-fly-orange text-white flex-shrink-0 group-hover:scale-110 transition-transform">
-                    <Phone className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <span className="text-xs uppercase font-bold text-slate-500 tracking-wider block">
-                      Australia Toll-Free Phone
+      <section className="container-page relative z-10 -mt-16 pb-24">
+        <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-12 lg:gap-8">
+          <div className="card p-6 shadow-xl shadow-fly-navy/5 sm:p-8 lg:col-span-5">
+            <h2 className="text-xl font-bold text-fly-navy-900">Get in touch</h2>
+            <ul className="mt-6 space-y-3">
+              {CHANNELS.map(({ icon: Icon, label, value, note, href }) => {
+                const content = (
+                  <>
+                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-fly-orange-50">
+                      <Icon className="h-5 w-5 text-fly-orange" />
                     </span>
-                    <strong className="text-lg text-fly-navy font-bold">1300 FLY AMZ (1300 359 269)</strong>
-                    <span className="text-xs text-emerald-700 block mt-0.5">Mon - Sat: 8:30 AM - 7:30 PM (AEST)</span>
-                  </div>
-                </a>
-
-                <div className="flex items-start space-x-4 p-4 rounded-2xl bg-slate-50 border border-slate-200">
-                  <div className="p-3 rounded-xl bg-fly-cyan text-white flex-shrink-0">
-                    <Mail className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <span className="text-xs uppercase font-bold text-slate-500 tracking-wider block">
-                      Direct Email Inquiries
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-xs text-slate-500">{label}</span>
+                      <span className="block break-words font-semibold text-slate-900">{value}</span>
+                      <span className="block text-xs text-slate-500">{note}</span>
                     </span>
-                    <strong className="text-base text-slate-900 font-bold">bookings@flyamazing.com.au</strong>
-                    <span className="text-xs text-slate-500 block mt-0.5">Inquiries monitored 24/7</span>
-                  </div>
-                </div>
-
-                <div className="flex items-start space-x-4 p-4 rounded-2xl bg-slate-50 border border-slate-200">
-                  <div className="p-3 rounded-xl bg-fly-navy text-white flex-shrink-0">
-                    <MapPin className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <span className="text-xs uppercase font-bold text-slate-500 tracking-wider block">
-                      Head Concierge Hubs
-                    </span>
-                    <strong className="text-base text-slate-900 font-bold">Melbourne &bull; Sydney &bull; Colombo</strong>
-                    <span className="text-xs text-slate-500 block mt-0.5">Australian registered travel agency</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="p-5 rounded-2xl bg-slate-100/80 border border-slate-200 text-xs sm:text-sm text-slate-600 leading-relaxed font-light">
-                All booking payments are processed securely in Australian Dollars (AUD) with no international foreign currency conversion fees.
-              </div>
-            </div>
-          </div>
-
-          {/* Right Column: Send a Message Form (7 cols) */}
-          <div className="lg:col-span-7 bg-white p-8 sm:p-10 rounded-3xl border border-slate-200 shadow-xl">
-            <h3 className="text-2xl sm:text-3xl font-display text-fly-navy font-normal mb-2">
-              Send an Inquiry to Our Travel Team
-            </h3>
-            <p className="text-sm sm:text-base text-slate-600 font-light mb-6">
-              Tell us your desired travel dates, party size, and dream Sri Lanka experiences. We will build a customized proposal and email you within 2 hours.
+                    {href && <ArrowUpRight className="h-4 w-4 shrink-0 text-slate-300 transition-colors group-hover:text-fly-orange" />}
+                  </>
+                );
+                return (
+                  <li key={label}>
+                    {href ? (
+                      <a href={href} className="group flex items-center gap-4 rounded-2xl border border-slate-200 p-4 transition-colors hover:border-fly-orange/40 hover:bg-fly-orange-50/30">
+                        {content}
+                      </a>
+                    ) : (
+                      <div className="flex items-center gap-4 rounded-2xl border border-slate-200 p-4">{content}</div>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+            <p className="mt-6 rounded-xl bg-slate-50 p-4 text-sm leading-relaxed text-slate-500">
+              All bookings are priced and paid in Australian dollars, with no foreign currency conversion fees.
             </p>
+          </div>
 
-            {submitted ? (
-              <div className="p-8 bg-emerald-50 rounded-2xl border border-emerald-200 text-center space-y-4">
-                <CheckCircle className="w-14 h-14 text-emerald-600 mx-auto" />
-                <h4 className="text-2xl font-display text-emerald-900 font-normal">Message Received!</h4>
-                <p className="text-sm text-emerald-800 font-light">
-                  Reference Token: <strong>{token}</strong>
-                </p>
-                <p className="text-xs sm:text-sm text-emerald-700">
-                  Your inquiry has been delivered to <strong>yasithvidusara@gmail.com</strong>. A dedicated specialist will reach out shortly.
+          <div className="card p-6 shadow-xl shadow-fly-navy/5 sm:p-10 lg:col-span-7">
+            <h2 className="text-2xl font-bold text-fly-navy-900 sm:text-3xl">Send us a message</h2>
+            <p className="mt-2 text-slate-500">We&rsquo;ll reply with ideas and a tailored proposal within 2 business hours.</p>
+
+            {token ? (
+              <div className="mt-8 rounded-2xl border border-emerald-200 bg-emerald-50/50 p-8 text-center">
+                <CheckCircle2 className="mx-auto h-12 w-12 text-emerald-600" />
+                <h3 className="mt-4 text-xl font-bold text-slate-900">Message received</h3>
+                <p className="mt-2 text-sm text-slate-500">
+                  Your reference is <span className="font-semibold text-fly-navy-900">{token}</span>. A specialist will be in
+                  touch shortly.
                 </p>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="space-y-4 text-sm">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                      Your Full Name *
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      placeholder="e.g. Sarah Jenkins"
-                      className="w-full p-3.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-fly-cyan text-sm"
-                    />
+              <form onSubmit={handleSubmit} className="mt-8 space-y-4">
+                {error && (
+                  <div role="alert" className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                    {error}
                   </div>
-
-                  <div>
-                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                      Email Address *
-                    </label>
-                    <input
-                      type="email"
-                      required
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="sarah@example.com.au"
-                      className="w-full p-3.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-fly-cyan text-sm"
-                    />
-                  </div>
+                )}
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <Field id="ct-name" label="Full name">
+                    <input id="ct-name" type="text" required autoComplete="name" value={name} onChange={(e) => setName(e.target.value)} className="field-input" />
+                  </Field>
+                  <Field id="ct-email" label="Email">
+                    <input id="ct-email" type="email" required autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} className="field-input" />
+                  </Field>
                 </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                    Australian Phone Number *
-                  </label>
-                  <input
-                    type="tel"
-                    required
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    placeholder="0412 889 000"
-                    className="w-full p-3.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-fly-cyan text-sm"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                    How Can We Help You? (Destination preferences, travel dates, flight seats, etc.)
-                  </label>
+                <Field id="ct-phone" label="Mobile">
+                  <input id="ct-phone" type="tel" required autoComplete="tel" placeholder="04xx xxx xxx" value={phone} onChange={(e) => setPhone(e.target.value)} className="field-input" />
+                </Field>
+                <Field id="ct-message" label="How can we help?">
                   <textarea
-                    rows={4}
+                    id="ct-message"
+                    rows={5}
                     required
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
-                    placeholder="We want a 10-day tour for our 10th wedding anniversary in November 2026, visiting Sigiriya, Ella, and Yala safari..."
-                    className="w-full p-3.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-fly-cyan text-sm resize-none"
+                    placeholder="e.g. A 10-day anniversary trip in November 2026 with Sigiriya, Ella and a Yala safari."
+                    className="field-input resize-none"
                   />
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={submitting}
-                  className="w-full py-4 rounded-2xl bg-gradient-to-r from-fly-orange to-fly-orange-600 hover:from-fly-orange-600 hover:to-fly-orange text-white font-bold text-base shadow-xl shadow-fly-orange/30 transition flex items-center justify-center space-x-2"
-                >
-                  {submitting ? (
-                    <span>Sending to Specialist...</span>
-                  ) : (
-                    <>
-                      <Send className="w-5 h-5" />
-                      <span>Send Message to Australian Travel Desk</span>
-                    </>
-                  )}
+                </Field>
+                <button type="submit" disabled={submitting} className="btn-primary btn-lg w-full">
+                  {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                  {submitting ? "Sending…" : "Send message"}
                 </button>
-                <p className="text-xs text-center text-slate-400 font-light">
-                  🔒 Delivered directly to admin: yasithvidusara@gmail.com
-                </p>
               </form>
             )}
           </div>

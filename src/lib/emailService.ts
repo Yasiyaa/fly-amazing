@@ -14,7 +14,7 @@ export interface TourInquiryData {
     adults: number;
     children: number;
   };
-  tourType: "custom" | "package";
+  tourType: "custom" | "package" | "flight" | "general";
   packageName?: string;
   estimatedBudgetAUD: number;
   itinerary: Array<{
@@ -29,6 +29,20 @@ export interface TourInquiryData {
   specialRequests?: string;
 }
 
+const HTML_ESCAPES: Record<string, string> = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" };
+
+/** Escape user-supplied text before it is placed in the email HTML. */
+function esc(value: unknown): string {
+  return String(value ?? "").replace(/[&<>"']/g, (c) => HTML_ESCAPES[c]);
+}
+
+const TOUR_TYPE_LABELS: Record<TourInquiryData["tourType"], string> = {
+  custom: "Bespoke custom journey (Tour Architect)",
+  package: "Curated package",
+  flight: "Flights only",
+  general: "General enquiry",
+};
+
 export async function sendTourInquiryEmail(data: TourInquiryData) {
   const adminEmail = process.env.ADMIN_NOTIFICATION_EMAIL || "yasithvidusara@gmail.com";
   
@@ -37,9 +51,9 @@ export async function sendTourInquiryEmail(data: TourInquiryData) {
     .map(
       (item, idx) => `
       <tr style="border-bottom: 1px solid #e2e8f0;">
-        <td style="padding: 12px 16px; font-weight: 600; color: #033f7e;">Stop ${idx + 1}: ${item.destinationName}</td>
+        <td style="padding: 12px 16px; font-weight: 600; color: #033f7e;">Stop ${idx + 1}: ${esc(item.destinationName)}</td>
         <td style="padding: 12px 16px; color: #475569;">${item.nights} Night${item.nights > 1 ? "s" : ""}</td>
-        <td style="padding: 12px 16px; color: #01a4a9; font-weight: 500;">${item.hotelName || "Standard Boutique Stay"} (${item.roomType || "Standard Suite"})</td>
+        <td style="padding: 12px 16px; color: #01a4a9; font-weight: 500;">${esc(item.hotelName || "Standard Boutique Stay")} (${esc(item.roomType || "Standard Suite")})</td>
         <td style="padding: 12px 16px; color: #e66017; font-weight: 600; text-align: right;">${item.pricePerNightAUD ? `$${item.pricePerNightAUD * item.nights} AUD` : "Included"}</td>
       </tr>
     `
@@ -75,7 +89,7 @@ export async function sendTourInquiryEmail(data: TourInquiryData) {
         <div class="header">
           <h1>✈️ New Sri Lanka Tour Dossier</h1>
           <p>Fly Amazing — Australia to Sri Lanka Travel System</p>
-          <div class="badge">Reference: ${data.inquiryId}</div>
+          <div class="badge">Reference: ${esc(data.inquiryId)}</div>
         </div>
         
         <div class="content">
@@ -83,23 +97,23 @@ export async function sendTourInquiryEmail(data: TourInquiryData) {
           <div class="info-grid">
             <div class="info-box">
               <div class="info-label">Full Name</div>
-              <div class="info-value">${data.fullName}</div>
+              <div class="info-value">${esc(data.fullName)}</div>
             </div>
             <div class="info-box">
               <div class="info-label">Contact Email</div>
-              <div class="info-value"><a href="mailto:${data.email}" style="color: #033f7e;">${data.email}</a></div>
+              <div class="info-value"><a href="mailto:${esc(data.email)}" style="color: #033f7e;">${esc(data.email)}</a></div>
             </div>
             <div class="info-box">
               <div class="info-label">Australian Phone</div>
-              <div class="info-value"><a href="tel:${data.phone}" style="color: #033f7e;">${data.phone}</a></div>
+              <div class="info-value"><a href="tel:${esc(data.phone)}" style="color: #033f7e;">${esc(data.phone)}</a></div>
             </div>
             <div class="info-box">
               <div class="info-label">Departure Airport</div>
-              <div class="info-value">${data.departureCity} &rarr; Colombo (CMB)</div>
+              <div class="info-value">${esc(data.departureCity)} &rarr; Colombo (CMB)</div>
             </div>
             <div class="info-box">
               <div class="info-label">Travel Window</div>
-              <div class="info-value">${data.travelDates.startDate} ${data.travelDates.endDate ? `to ${data.travelDates.endDate}` : ""}</div>
+              <div class="info-value">${esc(data.travelDates.startDate)} ${data.travelDates.endDate ? `to ${esc(data.travelDates.endDate)}` : ""}</div>
             </div>
             <div class="info-box">
               <div class="info-label">Party Size</div>
@@ -109,7 +123,7 @@ export async function sendTourInquiryEmail(data: TourInquiryData) {
 
           <div class="section-title">Tour Selection & Itinerary</div>
           <p style="margin: 0 0 12px 0; font-size: 14px; color: #475569;">
-            <strong>Type:</strong> ${data.tourType === "package" ? `Curated Package: ${data.packageName}` : "Bespoke Custom Journey (Tour Architect)"}
+            <strong>Type:</strong> ${esc(TOUR_TYPE_LABELS[data.tourType])}${data.packageName ? `: ${esc(data.packageName)}` : ""}
           </p>
 
           <table>
@@ -136,7 +150,7 @@ export async function sendTourInquiryEmail(data: TourInquiryData) {
               ? `
             <div class="section-title">Client Notes / Special Requests</div>
             <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 14px; font-size: 14px; color: #92400e;">
-              ${data.specialRequests}
+              ${esc(data.specialRequests)}
             </div>
           `
               : ""
@@ -168,7 +182,7 @@ export async function sendTourInquiryEmail(data: TourInquiryData) {
       from: `"Fly Amazing Bookings" <${process.env.SMTP_FROM || process.env.SMTP_USER}>`,
       to: adminEmail,
       replyTo: data.email,
-      subject: `✈️ [NEW TOUR INQUIRY ${data.inquiryId}] ${data.fullName} - ${data.departureCity} to Sri Lanka`,
+      subject: `[New enquiry ${data.inquiryId}] ${data.fullName} - ${data.departureCity} to Sri Lanka`,
       html: emailHtml,
     });
   } else {

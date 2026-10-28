@@ -24,7 +24,7 @@ Fly Amazing connects Australian travelers (departing from Melbourne, Sydney, Bri
 - **Styling**: [Tailwind CSS](https://tailwindcss.com/)
 - **Animations**: [Framer Motion](https://www.framer.com/motion/)
 - **Icons**: [Lucide React](https://lucide.dev/)
-- **Typography**: Playfair Display (Headlines) & Plus Jakarta Sans (UI)
+- **Typography**: Outfit (headlines) & Plus Jakarta Sans (UI) via `next/font`
 - **Language**: TypeScript
 
 ---
