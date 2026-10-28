@@ -191,8 +191,8 @@ export default function FlightTransitionOverlay() {
                 <span>fly cheaper &bull; fly smarter</span>
               </div>
 
-              <div className="text-xl sm:text-3xl font-serif font-normal italic tracking-wide text-white drop-shadow-md">
-                Flying you to Sri Lanka...
+              <div className="text-xl sm:text-3xl font-display font-extrabold tracking-tight text-white drop-shadow-md">
+                Flying You to Sri Lanka...
               </div>
 
               {/* Progress Indicator Bar */}

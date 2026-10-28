@@ -65,12 +65,12 @@ export default function TourArchitectPage() {
             <span>Interactive Bespoke Journey Canvas</span>
           </div>
 
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-normal font-serif text-white tracking-tight leading-tight">
-            The Bespoke <span className="italic text-fly-cyan-300">Tour Architect</span>.
+          <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold font-display text-white tracking-tight leading-tight uppercase">
+            Bespoke Tour Architect
           </h1>
 
-          <p className="mt-3 text-xs sm:text-base text-slate-200 max-w-2xl mx-auto font-light leading-relaxed">
-            Take full control of your Sri Lanka holiday. Add or remove iconic destinations, tweak your nights at each stop, and dynamically choose luxury hotels with real guest reviews.
+          <p className="mt-3 text-sm sm:text-base text-slate-200 max-w-xl mx-auto font-medium">
+            Customize your route, duration, and luxury hotels dynamically with real guest reviews and live AUD pricing.
           </p>
         </div>
       </section>

@@ -58,12 +58,12 @@ export default function PackagesCatalogPage() {
             <span>Handcrafted Sri Lanka Expeditions</span>
           </div>
 
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-normal font-serif text-white tracking-tight leading-tight">
-            Curated Ceylon <span className="italic text-fly-cyan-300">Voyages</span>.
+          <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold font-display text-white tracking-tight leading-tight uppercase">
+            Curated Sri Lanka Voyages
           </h1>
 
-          <p className="mt-3 text-xs sm:text-base text-slate-200 max-w-2xl mx-auto font-light leading-relaxed">
-            All-inclusive luxury journeys bundling international return flights from Australia, 4 & 5-star handpicked boutique estates, and your own private dedicated chauffeur-guide.
+          <p className="mt-3 text-sm sm:text-base text-slate-200 max-w-xl mx-auto font-medium">
+            All-inclusive luxury journeys: return flights from Australia, 5-star handpicked estates, and a private chauffeur.
           </p>
         </div>
       </section>
@@ -135,7 +135,7 @@ export default function PackagesCatalogPage() {
                     <Plane className="w-4 h-4 text-fly-cyan-200" />
                     <span>Flights Included</span>
                   </div>
-                  <h3 className="text-2xl sm:text-3xl font-normal font-serif text-white leading-tight">
+                  <h3 className="text-2xl sm:text-3xl font-normal font-display text-white leading-tight">
                     {pkg.title}
                   </h3>
                 </div>
@@ -186,7 +186,7 @@ export default function PackagesCatalogPage() {
                       Starting Price (Per Person)
                     </span>
                     <div className="flex items-baseline space-x-1.5">
-                      <span className="text-3xl font-normal font-serif text-fly-navy">
+                      <span className="text-3xl font-normal font-display text-fly-navy">
                         ${pkg.priceAUD.toLocaleString()}
                       </span>
                       <span className="text-sm font-bold text-slate-500 font-sans">AUD</span>
@@ -220,7 +220,7 @@ export default function PackagesCatalogPage() {
       <section className="max-w-7xl mx-auto px-4 sm:px-8 pb-20">
         <div className="rounded-3xl bg-slate-900 text-white p-8 sm:p-12 flex flex-col md:flex-row items-center justify-between gap-6 border border-slate-800">
           <div>
-            <h3 className="text-2xl sm:text-3xl font-normal font-serif text-white">
+            <h3 className="text-2xl sm:text-3xl font-normal font-display text-white">
               Want a Tailored Route Just for You?
             </h3>
             <p className="text-sm sm:text-base text-slate-300 font-light mt-2 max-w-xl">

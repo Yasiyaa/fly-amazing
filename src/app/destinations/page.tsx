@@ -47,12 +47,12 @@ export default function DestinationsPage() {
             <span>Sri Lanka Regional Traveler Guide</span>
           </div>
 
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-normal font-serif text-white tracking-tight leading-tight">
-            Explore the Island of <span className="italic text-fly-cyan-300">Wonder</span>.
+          <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold font-display text-white tracking-tight leading-tight uppercase">
+            Sri Lanka Destinations
           </h1>
 
-          <p className="mt-3 text-xs sm:text-base text-slate-200 max-w-2xl mx-auto font-light leading-relaxed">
-            From the sky-citadel of Sigiriya to the misty colonial tea valleys of Ella and the wild leopard sanctuaries of Yala. Discover the iconic regions you can explore with Fly Amazing.
+          <p className="mt-3 text-sm sm:text-base text-slate-200 max-w-xl mx-auto font-medium">
+            From the 5th-century Sigiriya Citadel to misty Ella tea trails and wild Yala leopard scrublands.
           </p>
         </div>
       </section>
@@ -111,7 +111,7 @@ export default function DestinationsPage() {
                 </div>
 
                 <div className="absolute bottom-4 left-4 right-4 text-white">
-                  <h3 className="text-2xl sm:text-3xl font-normal font-serif text-white">{dest.name}</h3>
+                  <h3 className="text-2xl sm:text-3xl font-normal font-display text-white">{dest.name}</h3>
                   <p className="text-xs sm:text-sm text-fly-cyan-200 mt-1 font-light">
                     {dest.tagline}
                   </p>

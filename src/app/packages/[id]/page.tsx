@@ -22,7 +22,7 @@ export default function PackageDetailPage() {
       <main className="min-h-screen bg-slate-50 flex flex-col justify-between">
         <Navbar />
         <div className="py-40 text-center max-w-lg mx-auto px-4">
-          <h2 className="text-3xl font-serif text-fly-navy">Package Not Found</h2>
+          <h2 className="text-3xl font-display text-fly-navy">Package Not Found</h2>
           <p className="mt-3 text-slate-600 font-light">The requested voyage could not be found.</p>
           <Link href="/packages" className="mt-6 inline-block px-6 py-3 rounded-full bg-fly-orange text-white font-bold">
             Browse All Packages
@@ -62,7 +62,7 @@ export default function PackageDetailPage() {
             </span>
           </div>
 
-          <h1 className="text-3xl sm:text-5xl md:text-6xl font-normal font-serif text-white tracking-tight leading-tight max-w-4xl">
+          <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold font-display text-white tracking-tight leading-tight max-w-4xl uppercase">
             {pkg.title}
           </h1>
 
@@ -81,7 +81,7 @@ export default function PackageDetailPage() {
               <span>Private AC Vehicle & Personal Chauffeur</span>
             </div>
             <div>•</div>
-            <div className="text-2xl font-serif text-fly-orange font-bold">
+            <div className="text-2xl font-display text-fly-orange font-bold">
               ${pkg.priceAUD.toLocaleString()} <span className="text-xs font-sans text-slate-300 font-bold">AUD pp</span>
             </div>
           </div>
@@ -98,7 +98,7 @@ export default function PackageDetailPage() {
               <span className="text-xs font-bold uppercase tracking-[0.2em] text-fly-cyan-700 block">
                 Expedition Overview
               </span>
-              <h2 className="text-2xl sm:text-3xl font-serif text-fly-navy font-normal">
+              <h2 className="text-2xl sm:text-3xl font-display text-fly-navy font-normal">
                 Journey Description
               </h2>
               <p className="text-base sm:text-lg text-slate-700 font-light leading-relaxed">
@@ -128,7 +128,7 @@ export default function PackageDetailPage() {
                   <span className="text-xs font-bold uppercase tracking-[0.2em] text-fly-orange block">
                     Day-by-Day Journey Flow
                   </span>
-                  <h2 className="text-2xl sm:text-3xl font-serif text-fly-navy font-normal">
+                  <h2 className="text-2xl sm:text-3xl font-display text-fly-navy font-normal">
                     Complete Tour Itinerary
                   </h2>
                 </div>
@@ -148,7 +148,7 @@ export default function PackageDetailPage() {
                         <span className="px-3 py-1 rounded-xl bg-fly-navy text-white text-xs font-bold font-sans">
                           Day {day.day}
                         </span>
-                        <h3 className="text-lg sm:text-xl font-serif text-slate-900 font-normal">
+                        <h3 className="text-lg sm:text-xl font-display text-slate-900 font-normal">
                           {day.title}
                         </h3>
                       </div>
@@ -172,7 +172,7 @@ export default function PackageDetailPage() {
 
             {/* Inclusions & Exclusions */}
             <div className="p-8 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-6">
-              <h3 className="text-2xl font-serif text-fly-navy font-normal">
+              <h3 className="text-2xl font-display text-fly-navy font-normal">
                 What’s Included in Your Voyage
               </h3>
 
@@ -195,7 +195,7 @@ export default function PackageDetailPage() {
                   All-Inclusive Package Price
                 </span>
                 <div className="flex items-baseline space-x-2 mt-1">
-                  <span className="text-4xl font-serif text-fly-navy font-normal">
+                  <span className="text-4xl font-display text-fly-navy font-normal">
                     ${pkg.priceAUD.toLocaleString()}
                   </span>
                   <span className="text-sm font-bold text-slate-500">AUD / person</span>

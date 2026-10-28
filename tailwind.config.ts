@@ -54,8 +54,8 @@ const config: Config = {
       },
       fontFamily: {
         sans: ['"Plus Jakarta Sans"', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'sans-serif'],
-        serif: ['"Playfair Display"', 'Georgia', 'Cambria', '"Times New Roman"', 'serif'],
-        display: ['"Playfair Display"', 'Georgia', 'serif'],
+        display: ['"Outfit"', '"Plus Jakarta Sans"', 'sans-serif'],
+        heading: ['"Outfit"', 'sans-serif'],
       },
       letterSpacing: {
         widest: ".2em",

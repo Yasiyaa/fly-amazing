@@ -68,12 +68,12 @@ export default function ContactPage() {
             <span>Australian Dedicated Support</span>
           </div>
 
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-normal font-serif text-white tracking-tight leading-tight">
-            Speak with an <span className="italic text-fly-cyan-300">Australian Specialist</span>.
+          <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold font-display text-white tracking-tight leading-tight uppercase">
+            Contact Australian Concierge
           </h1>
 
-          <p className="mt-3 text-xs sm:text-base text-slate-200 max-w-2xl mx-auto font-light leading-relaxed">
-            Planning a once-in-a-lifetime journey to Sri Lanka? Our local travel experts in Melbourne and Sydney are here to customize your flights, hotels, and private chauffeured tours.
+          <p className="mt-3 text-sm sm:text-base text-slate-200 max-w-xl mx-auto font-medium">
+            Direct hotline 1300 FLY AMZ (1300 359 269) &amp; tailored holiday consultations. Melbourne &amp; Sydney.
           </p>
         </div>
       </section>
@@ -84,7 +84,7 @@ export default function ContactPage() {
           {/* Left Column: Direct Phone & Trust Cards (5 cols) */}
           <div className="lg:col-span-5 space-y-6">
             <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-xl space-y-6">
-              <h3 className="text-2xl font-serif text-fly-navy font-normal">
+              <h3 className="text-2xl font-display text-fly-navy font-normal">
                 Direct Contact Channels
               </h3>
 
@@ -140,7 +140,7 @@ export default function ContactPage() {
 
           {/* Right Column: Send a Message Form (7 cols) */}
           <div className="lg:col-span-7 bg-white p-8 sm:p-10 rounded-3xl border border-slate-200 shadow-xl">
-            <h3 className="text-2xl sm:text-3xl font-serif text-fly-navy font-normal mb-2">
+            <h3 className="text-2xl sm:text-3xl font-display text-fly-navy font-normal mb-2">
               Send an Inquiry to Our Travel Team
             </h3>
             <p className="text-sm sm:text-base text-slate-600 font-light mb-6">
@@ -150,7 +150,7 @@ export default function ContactPage() {
             {submitted ? (
               <div className="p-8 bg-emerald-50 rounded-2xl border border-emerald-200 text-center space-y-4">
                 <CheckCircle className="w-14 h-14 text-emerald-600 mx-auto" />
-                <h4 className="text-2xl font-serif text-emerald-900 font-normal">Message Received!</h4>
+                <h4 className="text-2xl font-display text-emerald-900 font-normal">Message Received!</h4>
                 <p className="text-sm text-emerald-800 font-light">
                   Reference Token: <strong>{token}</strong>
                 </p>

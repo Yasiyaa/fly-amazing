@@ -85,12 +85,12 @@ export default function FlightsPage() {
             <span>Australia to Colombo (CMB) Specialist</span>
           </div>
 
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-normal font-serif text-white tracking-tight leading-tight">
-            Fly to Sri Lanka from <span className="italic text-fly-cyan-300">Australia</span>.
+          <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold font-display text-white tracking-tight leading-tight uppercase">
+            Australia to Sri Lanka Flights
           </h1>
 
-          <p className="mt-3 text-xs sm:text-base text-slate-200 max-w-2xl mx-auto font-light leading-relaxed">
-            Exclusive wholesale airfares with <strong>SriLankan Airlines, Singapore Airlines & Malaysia Airlines</strong>. Direct non-stop flights from Melbourne and Sydney, plus fast 1-stop connections from Brisbane, Perth, and Adelaide.
+          <p className="mt-3 text-sm sm:text-base text-slate-200 max-w-xl mx-auto font-medium">
+            Direct & 1-stop wholesale fares with SriLankan Airlines, Singapore Airlines & Malaysia Airlines. Locked in AUD.
           </p>
         </div>
       </section>
@@ -103,7 +103,7 @@ export default function FlightsPage() {
               <span className="text-xs font-bold uppercase tracking-[0.18em] text-fly-orange block mb-1">
                 Select Your Australian Departure City
               </span>
-              <h2 className="text-2xl sm:text-3xl font-normal font-serif text-fly-navy">
+              <h2 className="text-2xl sm:text-3xl font-normal font-display text-fly-navy">
                 Compare Fares & Schedules to Colombo (CMB)
               </h2>
             </div>
@@ -131,11 +131,11 @@ export default function FlightsPage() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             <div className="lg:col-span-7 space-y-6">
               <div className="flex items-center space-x-3">
-                <span className="text-3xl sm:text-4xl font-normal font-serif text-fly-navy">
+                <span className="text-3xl sm:text-4xl font-normal font-display text-fly-navy">
                   {selectedCity.name}
                 </span>
                 <span className="text-xl font-bold text-slate-400">&rarr;</span>
-                <span className="text-2xl sm:text-3xl font-normal font-serif text-fly-cyan-700">
+                <span className="text-2xl sm:text-3xl font-normal font-display text-fly-cyan-700">
                   Colombo (CMB)
                 </span>
               </div>
@@ -161,7 +161,7 @@ export default function FlightsPage() {
 
                 <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 col-span-2 sm:col-span-1">
                   <div className="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1">Starting Return Fare</div>
-                  <div className="font-black text-fly-orange text-xl sm:text-2xl font-serif">
+                  <div className="font-black text-fly-orange text-xl sm:text-2xl font-display">
                     ${selectedCity.baseFareAUD} <span className="text-xs font-bold text-slate-500 font-sans">AUD</span>
                   </div>
                   <div className="text-xs text-emerald-600 font-semibold mt-0.5">Taxes & Surcharges Incl.</div>
@@ -199,7 +199,7 @@ export default function FlightsPage() {
 
             {/* Right Column: Quick Flight Ticket Request Form */}
             <div className="lg:col-span-5 bg-slate-50 p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-md">
-              <h3 className="text-xl sm:text-2xl font-normal font-serif text-fly-navy mb-2">
+              <h3 className="text-xl sm:text-2xl font-normal font-display text-fly-navy mb-2">
                 Request an Official Flight Quote
               </h3>
               <p className="text-xs sm:text-sm text-slate-600 font-light mb-6">
@@ -327,7 +327,7 @@ export default function FlightsPage() {
             <span className="text-xs font-bold uppercase tracking-[0.2em] text-fly-cyan-200">
               Complete Travel Solution
             </span>
-            <h3 className="text-2xl sm:text-4xl font-normal font-serif text-white">
+            <h3 className="text-2xl sm:text-4xl font-normal font-display text-white">
               Bundle Your Flights with a Bespoke Sri Lanka Tour.
             </h3>
             <p className="text-sm sm:text-base text-slate-200 font-light max-w-xl">

@@ -18,7 +18,7 @@ export default function Footer() {
               <ShieldCheck className="w-5 h-5" />
             </div>
             <div>
-              <h4 className="font-bold text-white text-base font-serif">Australian Consumer Protection</h4>
+              <h4 className="font-bold text-white text-base font-display">Australian Consumer Protection</h4>
               <p className="text-xs sm:text-sm text-slate-300 mt-1 leading-relaxed font-light">
                 Book with total confidence. All international airfares, boutique hotels, and chauffeured tours strictly comply with Australian consumer travel standards.
               </p>
@@ -30,7 +30,7 @@ export default function Footer() {
               <Award className="w-5 h-5" />
             </div>
             <div>
-              <h4 className="font-bold text-white text-base font-serif">Direct Airline Contracts</h4>
+              <h4 className="font-bold text-white text-base font-display">Direct Airline Contracts</h4>
               <p className="text-xs sm:text-sm text-slate-300 mt-1 leading-relaxed font-light">
                 Direct partnerships with SriLankan Airlines, Singapore Airlines, and Malaysia Airlines, securing unbeatable wholesale seat allocations into Colombo (CMB).
               </p>
@@ -42,7 +42,7 @@ export default function Footer() {
               <HeartHandshake className="w-5 h-5" />
             </div>
             <div>
-              <h4 className="font-bold text-white text-base font-serif">Private Chauffeur Included</h4>
+              <h4 className="font-bold text-white text-base font-display">Private Chauffeur Included</h4>
               <p className="text-xs sm:text-sm text-slate-300 mt-1 leading-relaxed font-light">
                 No crowded buses. Every bespoke booking includes a private, modern air-conditioned vehicle with a certified, English-speaking personal guide.
               </p>

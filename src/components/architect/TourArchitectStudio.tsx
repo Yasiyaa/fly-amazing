@@ -162,11 +162,11 @@ export default function TourArchitectStudio({
               <Compass className="w-3.5 h-3.5 text-fly-orange" />
               <span>Interactive Bespoke Tour Studio</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-normal font-serif text-fly-navy tracking-tight">
-              Design Your <span className="italic">Sri Lanka Odyssey</span>.
+            <h2 className="text-3xl sm:text-5xl font-extrabold font-display text-fly-navy tracking-tight uppercase">
+              Tour Architect Studio
             </h2>
-            <p className="mt-2 text-xs sm:text-sm text-slate-600 font-light max-w-xl leading-relaxed">
-              Add iconic destinations, tweak your stay duration, and dynamically choose luxury hotels with real guest reviews. Real-time AUD estimates with your private chauffeur included.
+            <p className="mt-2 text-sm sm:text-base text-slate-500 max-w-lg font-medium">
+              Add destinations, adjust stay lengths, and choose luxury hotels dynamically with live AUD pricing.
             </p>
           </div>
 
@@ -222,7 +222,7 @@ export default function TourArchitectStudio({
                       : "bg-white text-slate-700 hover:bg-slate-100 border border-slate-200"
                   }`}
                 >
-                  <span className="font-serif">{dest.name}</span>
+                  <span className="font-display">{dest.name}</span>
                   {isIncluded ? (
                     <span className="w-3.5 h-3.5 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[9px]">
                       ✓
@@ -241,7 +241,7 @@ export default function TourArchitectStudio({
           {/* Left Column: Itinerary Stops Timeline (5 cols) */}
           <div className="lg:col-span-5 space-y-3.5">
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-semibold font-serif text-fly-navy flex items-center space-x-2">
+              <h3 className="text-sm font-semibold font-display text-fly-navy flex items-center space-x-2">
                 <span>Selected Journey Route</span>
                 <span className="px-2 py-0.5 rounded-full bg-fly-cyan-50 text-fly-cyan-800 text-[11px] font-bold font-sans">
                   {stops.length} Stops &bull; {totalNights} Nights
@@ -281,7 +281,7 @@ export default function TourArchitectStudio({
                         </div>
 
                         <div>
-                          <h4 className="text-sm font-serif font-normal text-slate-900 leading-tight">
+                          <h4 className="text-sm font-display font-normal text-slate-900 leading-tight">
                             {stop.destination.name}
                           </h4>
                           <span className="text-[10px] font-semibold text-fly-cyan-700 block uppercase">
@@ -390,7 +390,7 @@ export default function TourArchitectStudio({
                     <span className="text-[10px] uppercase tracking-wider font-semibold text-fly-cyan-200 block">
                       Active Stop • {activeStop.destination.region}
                     </span>
-                    <h3 className="text-xl sm:text-2xl font-normal font-serif text-white">{activeStop.destination.name}</h3>
+                    <h3 className="text-xl sm:text-2xl font-normal font-display text-white">{activeStop.destination.name}</h3>
                     <p className="text-xs text-slate-200 font-light line-clamp-1">
                       {activeStop.destination.tagline}
                     </p>
@@ -479,7 +479,7 @@ export default function TourArchitectStudio({
                             </span>
                           </div>
 
-                          <h5 className="text-sm font-serif font-normal text-slate-900 leading-snug">
+                          <h5 className="text-sm font-display font-normal text-slate-900 leading-snug">
                             {hotel.name}
                           </h5>
 
@@ -489,7 +489,7 @@ export default function TourArchitectStudio({
 
                           {/* Top Review Quote Sneak Peek */}
                           {hotel.reviews[0] && (
-                            <div className="mt-2 p-1.5 rounded-lg bg-slate-50 border border-slate-100 text-[10px] text-slate-600 italic font-serif">
+                            <div className="mt-2 p-1.5 rounded-lg bg-slate-50 border border-slate-100 text-[10px] text-slate-600 italic font-display">
                               &ldquo;{hotel.reviews[0].comment.slice(0, 65)}...&rdquo;
                               <span className="block font-medium font-sans text-slate-800 not-italic text-[9px] mt-0.5">
                                 — {hotel.reviews[0].author}
@@ -504,7 +504,7 @@ export default function TourArchitectStudio({
                             <span className="text-[9px] uppercase font-medium text-slate-400 block tracking-wider">
                               Nightly Rate
                             </span>
-                            <span className="text-sm font-normal font-serif text-fly-navy">
+                            <span className="text-sm font-normal font-display text-fly-navy">
                               ${hotel.pricePerNightAUD}{" "}
                               <span className="text-[10px] font-normal text-slate-500 font-sans">AUD</span>
                             </span>
@@ -577,7 +577,7 @@ export default function TourArchitectStudio({
                 Estimated Total (pp)
               </span>
               <div className="flex items-baseline space-x-1">
-                <span className="text-xl sm:text-2xl font-bold font-serif text-fly-orange">
+                <span className="text-xl sm:text-2xl font-bold font-display text-fly-orange">
                   ${totalEstimatedAUD.toLocaleString()}
                 </span>
                 <span className="text-xs font-bold text-slate-300 font-sans">AUD</span>
