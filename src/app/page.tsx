@@ -64,7 +64,7 @@ export default function HomePage() {
       />
 
       <PanoramicBannerBreak
-        image="https://images.unsplash.com/photo-1566766189268-ecac9118f2b7?q=80&w=2000&auto=format&fit=crop"
+        image="/images/yves-alarie-3R50kTNBKiE-unsplash.jpg"
         eyebrow="Central Highlands"
         title="Ride the blue train through the tea country"
         subtitle="The Nine Arch Bridge, misty tea estates and colonial hill stations, on one of the world's most scenic rail journeys."

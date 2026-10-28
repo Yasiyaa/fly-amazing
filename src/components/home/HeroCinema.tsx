@@ -11,37 +11,27 @@ interface HeroCinemaProps {
   onOpenArchitect?: () => void;
 }
 
-const CINEMATIC_REELS = [
+// Client-supplied 4K footage: one continuous background video (no auto-rotating slideshow).
+// Visitors can switch between the two clips.
+const CLIENT_HERO_VIDEOS = [
   {
-    videoUrl: "https://assets.mixkit.co/videos/11376/11376-720.mp4",
+    videoUrl: "/videos/vecteezy_aerial-view-of-sand-beach-and-water-surface-texture-foamy_7515199.mp4",
     poster: "https://images.unsplash.com/photo-1734279135136-dcaca9fdffaf?q=80&w=2000&auto=format&fit=crop",
-    location: "Mirissa & Weligama",
+    label: "Coast",
+    location: "Golden coastline & Indian Ocean surf",
     tag: "Southern coast",
   },
   {
-    videoUrl: "https://assets.mixkit.co/videos/11193/11193-720.mp4",
-    poster: "https://images.unsplash.com/photo-1559038298-ef4eecdfdbb3?q=80&w=2000&auto=format&fit=crop",
-    location: "Ella & Nuwara Eliya tea country",
+    videoUrl: "/videos/vecteezy_aerial-view-of-person-walking-on-bamboo-bridge-amidst-lush_78250928.mp4",
+    poster: "/images/dylan-shaw-smUAKwMT8XA-unsplash.jpg",
+    label: "Rainforest",
+    location: "Rainforest canopy & jungle trails",
     tag: "Hill country",
-  },
-  {
-    videoUrl: "https://assets.mixkit.co/videos/11059/11059-720.mp4",
-    poster: "https://images.unsplash.com/photo-1557050543-4d5f4e07ef46?q=80&w=2000&auto=format&fit=crop",
-    location: "Minneriya & Yala National Parks",
-    tag: "Wildlife safari",
-  },
-  {
-    videoUrl: "https://assets.mixkit.co/videos/11188/11188-720.mp4",
-    poster: "https://images.unsplash.com/photo-1736142260757-6effc558100a?q=80&w=2000&auto=format&fit=crop",
-    location: "Seema Malaka temple, Colombo",
-    tag: "Buddhist heritage",
   },
 ];
 
-const REEL_DURATION_MS = 9000;
-
 export default function HeroCinema({ onSelectDeparture, onOpenArchitect }: HeroCinemaProps) {
-  const [currentReel, setCurrentReel] = useState(0);
+  const [currentVideo, setCurrentVideo] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -50,19 +40,13 @@ export default function HeroCinema({ onSelectDeparture, onOpenArchitect }: HeroC
   }, []);
 
   useEffect(() => {
-    if (!isPlaying) return;
-    const timer = setInterval(() => setCurrentReel((prev) => (prev + 1) % CINEMATIC_REELS.length), REEL_DURATION_MS);
-    return () => clearInterval(timer);
-  }, [isPlaying]);
-
-  useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
     if (isPlaying) video.play().catch(() => undefined);
     else video.pause();
-  }, [isPlaying, currentReel]);
+  }, [isPlaying, currentVideo]);
 
-  const reel = CINEMATIC_REELS[currentReel];
+  const reel = CLIENT_HERO_VIDEOS[currentVideo];
 
   return (
     <section className="relative isolate flex min-h-[100svh] flex-col overflow-hidden bg-fly-navy-950 pt-[72px] text-white">
@@ -96,20 +80,25 @@ export default function HeroCinema({ onSelectDeparture, onOpenArchitect }: HeroC
         </p>
 
         <div className="mt-8 flex items-center gap-4">
-          <div className="flex items-center gap-2" role="tablist" aria-label="Featured locations">
-            {CINEMATIC_REELS.map((item, idx) => (
+          <div
+            className="flex items-center rounded-full border border-white/20 bg-black/30 p-1 backdrop-blur-md"
+            role="tablist"
+            aria-label="Background video"
+          >
+            {CLIENT_HERO_VIDEOS.map((item, idx) => (
               <button
-                key={item.location}
+                key={item.videoUrl}
                 type="button"
                 role="tab"
-                aria-selected={idx === currentReel}
-                aria-label={item.location}
-                onClick={() => setCurrentReel(idx)}
+                aria-selected={idx === currentVideo}
+                onClick={() => setCurrentVideo(idx)}
                 className={cn(
-                  "h-1.5 rounded-full transition-all duration-500",
-                  idx === currentReel ? "w-8 bg-white" : "w-1.5 bg-white/40 hover:bg-white/70"
+                  "rounded-full px-3.5 py-1.5 text-xs font-semibold transition-colors",
+                  idx === currentVideo ? "bg-white text-fly-navy-900" : "text-white/80 hover:text-white"
                 )}
-              />
+              >
+                {item.label}
+              </button>
             ))}
           </div>
           <button
