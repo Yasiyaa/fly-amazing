@@ -93,13 +93,13 @@ export default function HomePage() {
       {/* 1. Global Navigation */}
       <Navbar />
 
-      {/* 2. Cinematic Hero Section with Authentic 4K Sri Lanka Video Reels & Smart Booking Island */}
+      {/* 2. Cinematic Hero Section with Continuous 4K Background Video (No Slideshow) */}
       <HeroCinema
         onSelectDeparture={setSelectedAirport}
         onOpenArchitect={handleOpenArchitect}
       />
 
-      {/* 3. Interactive Sri Lanka 4K Video Wall (Sigiriya, Ella, Yala, Mirissa) */}
+      {/* 3. Interactive Sri Lanka 4K Video Wall (Sigiriya, Ella, Yala, Rainforest) */}
       <CinematicReelWall />
 
       {/* 4. Curated Master Voyages Showcase with Multi-Photo Selectors */}
@@ -119,10 +119,10 @@ export default function HomePage() {
         </Link>
       </div>
 
-      {/* 5. Panoramic Video Break 1: Sigiriya Lion Rock Citadel */}
+      {/* 5. Panoramic Video Break 1: Sigiriya Lion Rock & Rainforest Canopy */}
       <PanoramicBannerBreak
-        image="https://images.unsplash.com/photo-1580794749460-76f97b7180d8?q=80&w=2000&auto=format&fit=crop"
-        videoUrl="https://assets.mixkit.co/videos/11072/11072-720.mp4"
+        image="/images/dylan-shaw-smUAKwMT8XA-unsplash.jpg"
+        videoUrl="/videos/vecteezy_aerial-view-of-person-walking-on-bamboo-bridge-amidst-lush_78250928.mp4"
         badge="Cultural Triangle Citadel"
         title="SIGIRIYA LION ROCK CITADEL"
         subtitle="King Kashyapa’s 5th-century sky fortress towering 200m above ancient royal water gardens in Sri Lanka."
@@ -140,7 +140,7 @@ export default function HomePage() {
 
       {/* 7. Panoramic Video Break 2: Ella Nine Arch Bridge & Mountain Railway */}
       <PanoramicBannerBreak
-        image="https://images.unsplash.com/photo-1546708973-b339540b5162?q=80&w=2000&auto=format&fit=crop"
+        image="/images/yves-alarie-3R50kTNBKiE-unsplash.jpg"
         videoUrl="https://assets.mixkit.co/videos/1622/1622-720.mp4"
         badge="Central Highlands & Tea Mist"
         title="ELLA NINE ARCH BRIDGE & VINTAGE BLUE TRAIN"
@@ -154,7 +154,7 @@ export default function HomePage() {
 
       {/* 9. Panoramic Video Break 3: Wild Ceylon Safari (Yala & Minneriya) */}
       <PanoramicBannerBreak
-        image="https://images.unsplash.com/photo-1557050543-4d5f4e07ef46?q=80&w=2000&auto=format&fit=crop"
+        image="/images/udara-karunarathna-MXY2UUe1C4g-unsplash.jpg"
         videoUrl="https://assets.mixkit.co/videos/11088/11088-720.mp4"
         badge="Untamed Wildlife Safari"
         title="YALA & MINNERIYA WILDLIFE EXPEDITIONS"

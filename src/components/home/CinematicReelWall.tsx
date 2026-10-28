@@ -22,7 +22,7 @@ const CINEMA_CARDS: CinemaCard[] = [
     subtitle: "5th-Century Sky Palace",
     tag: "Cultural Triangle",
     videoUrl: "https://assets.mixkit.co/videos/11072/11072-720.mp4",
-    imageUrl: "https://images.unsplash.com/photo-1612862862126-865765df2ded?q=80&w=1200&auto=format&fit=crop",
+    imageUrl: "/images/dylan-shaw-smUAKwMT8XA-unsplash.jpg",
     link: "/destinations#sigiriya",
   },
   {
@@ -31,26 +31,26 @@ const CINEMA_CARDS: CinemaCard[] = [
     subtitle: "Scenic Blue Mountain Train",
     tag: "Central Highlands",
     videoUrl: "https://assets.mixkit.co/videos/1622/1622-720.mp4",
-    imageUrl: "https://images.unsplash.com/photo-1546708973-b339540b5162?q=80&w=1200&auto=format&fit=crop",
+    imageUrl: "/images/yves-alarie-3R50kTNBKiE-unsplash.jpg",
     link: "/destinations#ella",
   },
   {
     id: "yala",
-    title: "Yala Wild Elephants & Leopards",
-    subtitle: "Untamed Safari Reserve",
-    tag: "Wildlife Sanctuary",
+    title: "Yala Safari & Leopards",
+    subtitle: "Untamed Wildlife Sanctuary",
+    tag: "Wildlife Reserve",
     videoUrl: "https://assets.mixkit.co/videos/11088/11088-720.mp4",
-    imageUrl: "https://images.unsplash.com/photo-1557050543-4d5f4e07ef46?q=80&w=1200&auto=format&fit=crop",
+    imageUrl: "/images/tom-paisley-v2zEiziFb44-unsplash.jpg",
     link: "/destinations#yala",
   },
   {
-    id: "mirissa",
-    title: "Mirissa Stilt Fishermen",
-    subtitle: "Heritage Surf & Blue Whales",
-    tag: "Southern Coast",
-    videoUrl: "https://assets.mixkit.co/videos/5016/5016-720.mp4",
-    imageUrl: "https://images.unsplash.com/photo-1580674285054-bed31e145f59?q=80&w=1200&auto=format&fit=crop",
-    link: "/destinations#mirissa",
+    id: "rainforest-coast",
+    title: "Emerald Canopy & Bridge",
+    subtitle: "Tropical Nature Expeditions",
+    tag: "Highland Rainforest",
+    videoUrl: "/videos/vecteezy_aerial-view-of-person-walking-on-bamboo-bridge-amidst-lush_78250928.mp4",
+    imageUrl: "/images/chathura-anuradha-subasinghe-40uQmE9Zq8g-unsplash.jpg",
+    link: "/destinations#nuwara-eliya",
   },
 ];
 
@@ -76,7 +76,7 @@ export default function CinematicReelWall() {
             </h2>
           </div>
           <p className="mt-2 md:mt-0 text-slate-300 text-sm sm:text-base max-w-sm">
-            Iconic ancient fortresses, mountain railways, stilt fishermen, and wild safaris.
+            Iconic ancient fortresses, mountain railways, wild safaris, and pristine rainforests.
           </p>
         </div>
 
