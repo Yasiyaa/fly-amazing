@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Play, Sparkles, ArrowRight, Eye, Film } from "lucide-react";
+import { Play, ArrowRight, Film } from "lucide-react";
 
 interface CinemaCard {
   id: string;
@@ -18,39 +18,39 @@ interface CinemaCard {
 const CINEMA_CARDS: CinemaCard[] = [
   {
     id: "sigiriya",
-    title: "Sigiriya Rock Citadel",
+    title: "Sigiriya Lion Rock",
     subtitle: "5th-Century Sky Palace",
-    tag: "Aerial Drone Reel",
-    videoUrl: "https://assets.mixkit.co/videos/1496/1496-720.mp4",
+    tag: "Cultural Triangle",
+    videoUrl: "https://assets.mixkit.co/videos/11072/11072-720.mp4",
     imageUrl: "https://images.unsplash.com/photo-1612862862126-865765df2ded?q=80&w=1200&auto=format&fit=crop",
     link: "/destinations#sigiriya",
   },
   {
     id: "ella",
     title: "Ella Nine Arch Bridge",
-    subtitle: "Misty Mountain Railway",
-    tag: "Highland Expedition",
-    videoUrl: "https://assets.mixkit.co/videos/42283/42283-720.mp4",
+    subtitle: "Scenic Blue Mountain Train",
+    tag: "Central Highlands",
+    videoUrl: "https://assets.mixkit.co/videos/1622/1622-720.mp4",
     imageUrl: "https://images.unsplash.com/photo-1546708973-b339540b5162?q=80&w=1200&auto=format&fit=crop",
     link: "/destinations#ella",
   },
   {
-    id: "mirissa",
-    title: "Mirissa & Weligama",
-    subtitle: "Turquoise Waves & Whales",
-    tag: "South Coast Surf",
-    videoUrl: "https://assets.mixkit.co/videos/5016/5016-720.mp4",
-    imageUrl: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1200&auto=format&fit=crop",
-    link: "/destinations#mirissa",
+    id: "yala",
+    title: "Yala Wild Elephants & Leopards",
+    subtitle: "Untamed Safari Reserve",
+    tag: "Wildlife Sanctuary",
+    videoUrl: "https://assets.mixkit.co/videos/11088/11088-720.mp4",
+    imageUrl: "https://images.unsplash.com/photo-1557050543-4d5f4e07ef46?q=80&w=1200&auto=format&fit=crop",
+    link: "/destinations#yala",
   },
   {
-    id: "yala",
-    title: "Yala National Park",
-    subtitle: "Wild Ceylon Safari",
-    tag: "Untamed Wildlife",
-    videoUrl: "https://assets.mixkit.co/videos/42168/42168-720.mp4",
-    imageUrl: "https://images.unsplash.com/photo-1561731216-c3a4d99437d5?q=80&w=1200&auto=format&fit=crop",
-    link: "/destinations#yala",
+    id: "mirissa",
+    title: "Mirissa Stilt Fishermen",
+    subtitle: "Heritage Surf & Blue Whales",
+    tag: "Southern Coast",
+    videoUrl: "https://assets.mixkit.co/videos/5016/5016-720.mp4",
+    imageUrl: "https://images.unsplash.com/photo-1580674285054-bed31e145f59?q=80&w=1200&auto=format&fit=crop",
+    link: "/destinations#mirissa",
   },
 ];
 
@@ -58,7 +58,7 @@ export default function CinematicReelWall() {
   const [activeCard, setActiveCard] = useState<string | null>(null);
 
   return (
-    <section className="py-14 sm:py-20 bg-slate-950 text-white overflow-hidden relative">
+    <section className="py-14 sm:py-20 bg-slate-950 text-white overflow-hidden relative font-sans">
       {/* Background ambient lighting */}
       <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-fly-cyan/10 rounded-full blur-[140px] pointer-events-none" />
       <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-fly-orange/10 rounded-full blur-[140px] pointer-events-none" />
@@ -69,14 +69,14 @@ export default function CinematicReelWall() {
           <div>
             <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-xs font-bold uppercase tracking-[0.2em] text-fly-cyan mb-2">
               <Film className="w-3.5 h-3.5" />
-              <span>4K Visual Showcase</span>
+              <span>Sri Lanka in Motion</span>
             </div>
             <h2 className="text-2xl sm:text-4xl md:text-5xl font-black font-display tracking-tight text-white">
-              EXPERIENCE SRI LANKA IN MOTION
+              AUTHENTIC CEYLON MOMENTS
             </h2>
           </div>
           <p className="mt-2 md:mt-0 text-slate-300 text-sm sm:text-base max-w-sm">
-            Cinematic aerial footage of Sri Lanka&apos;s wonders waiting for your arrival.
+            Iconic ancient fortresses, mountain railways, stilt fishermen, and wild safaris.
           </p>
         </div>
 
@@ -129,7 +129,7 @@ export default function CinematicReelWall() {
                   <Play className="w-3.5 h-3.5 fill-current ml-0.5" />
                 </div>
 
-                {/* Bottom Content (Ultra-Minimal) */}
+                {/* Bottom Content */}
                 <div className="absolute inset-x-0 bottom-0 p-5 z-10 flex flex-col justify-end">
                   <span className="text-xs text-fly-orange font-bold uppercase tracking-wider mb-1">
                     {card.subtitle}

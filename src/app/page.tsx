@@ -93,13 +93,13 @@ export default function HomePage() {
       {/* 1. Global Navigation */}
       <Navbar />
 
-      {/* 2. Cinematic Hero Section with 4K Looping Drone Videos, Photos & Booking Capsule */}
+      {/* 2. Cinematic Hero Section with Authentic 4K Sri Lanka Video Reels & Smart Booking Island */}
       <HeroCinema
         onSelectDeparture={setSelectedAirport}
         onOpenArchitect={handleOpenArchitect}
       />
 
-      {/* 3. NEW: Interactive 4K Video Wall / Cinema Showcase */}
+      {/* 3. Interactive Sri Lanka 4K Video Wall (Sigiriya, Ella, Yala, Mirissa) */}
       <CinematicReelWall />
 
       {/* 4. Curated Master Voyages Showcase with Multi-Photo Selectors */}
@@ -114,19 +114,19 @@ export default function HomePage() {
           href="/packages"
           className="inline-flex items-center space-x-2 px-8 py-3.5 rounded-full bg-fly-navy hover:bg-fly-navy-800 text-white font-extrabold text-sm shadow-xl transition-all transform hover:scale-105"
         >
-          <span>Explore All 24+ Curated Itineraries</span>
+          <span>Explore All Curated Ceylon Itineraries</span>
           <ArrowRight className="w-4 h-4 text-fly-orange" />
         </Link>
       </div>
 
-      {/* 5. Panoramic Video Break: Sigiriya Sky Fortress */}
+      {/* 5. Panoramic Video Break 1: Sigiriya Lion Rock Citadel */}
       <PanoramicBannerBreak
         image="https://images.unsplash.com/photo-1580794749460-76f97b7180d8?q=80&w=2000&auto=format&fit=crop"
-        videoUrl="https://assets.mixkit.co/videos/1496/1496-720.mp4"
+        videoUrl="https://assets.mixkit.co/videos/11072/11072-720.mp4"
         badge="Cultural Triangle Citadel"
-        title="SIGIRIYA ROCK FORTRESS"
-        subtitle="5th-century sky fortress towering 200m above emerald rainforests and royal water gardens."
-        actionText="Explore Sigiriya Packages"
+        title="SIGIRIYA LION ROCK CITADEL"
+        subtitle="King Kashyapa’s 5th-century sky fortress towering 200m above ancient royal water gardens in Sri Lanka."
+        actionText="Explore Sigiriya Tour Packages"
         onAction={() => {
           window.location.href = "/packages";
         }}
@@ -138,27 +138,40 @@ export default function HomePage() {
         initialAirport={selectedAirport}
       />
 
-      {/* 7. Panoramic Video Break: Ella Highlands */}
+      {/* 7. Panoramic Video Break 2: Ella Nine Arch Bridge & Mountain Railway */}
       <PanoramicBannerBreak
         image="https://images.unsplash.com/photo-1546708973-b339540b5162?q=80&w=2000&auto=format&fit=crop"
-        videoUrl="https://assets.mixkit.co/videos/42283/42283-720.mp4"
+        videoUrl="https://assets.mixkit.co/videos/1622/1622-720.mp4"
         badge="Central Highlands & Tea Mist"
-        title="ELLA NINE ARCH BRIDGE"
-        subtitle="The iconic colonial viaduct nestled in mountain tea gardens and clouds."
-        actionText="Build Custom Hill Country Tour"
+        title="ELLA NINE ARCH BRIDGE & VINTAGE BLUE TRAIN"
+        subtitle="The iconic colonial stone viaduct surrounded by rolling emerald Ceylon tea hills and misty ravines."
+        actionText="Design Custom Hill Country Circuit"
         onAction={handleOpenArchitect}
       />
 
       {/* 8. Regional Destination Photo Wall */}
       <DestinationShowcase onSelectDestinationForTour={handleSelectDestinationForTour} />
 
-      {/* 9. Trust Pillars: Clean Minimal Grid */}
+      {/* 9. Panoramic Video Break 3: Wild Ceylon Safari (Yala & Minneriya) */}
+      <PanoramicBannerBreak
+        image="https://images.unsplash.com/photo-1557050543-4d5f4e07ef46?q=80&w=2000&auto=format&fit=crop"
+        videoUrl="https://assets.mixkit.co/videos/11088/11088-720.mp4"
+        badge="Untamed Wildlife Safari"
+        title="YALA & MINNERIYA WILDLIFE EXPEDITIONS"
+        subtitle="Encounter wild elephant herds and spot the elusive Ceylon leopard on private 4x4 dawn and dusk safaris."
+        actionText="Explore Wildlife Packages"
+        onAction={() => {
+          window.location.href = "/packages";
+        }}
+      />
+
+      {/* 10. Trust Pillars: Clean Minimal Grid */}
       <WhyFlyAmazing />
 
-      {/* 10. Global Footer */}
+      {/* 11. Global Footer */}
       <Footer />
 
-      {/* 11. Tour Finalization & Automated Admin Email Modal */}
+      {/* 12. Tour Finalization & Automated Admin Email Modal */}
       <TourFinalizeModal
         isOpen={isFinalizeModalOpen}
         onClose={() => setIsFinalizeModalOpen(false)}

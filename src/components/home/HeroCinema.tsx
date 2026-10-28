@@ -14,35 +14,35 @@ interface HeroCinemaProps {
 const CINEMATIC_REELS = [
   {
     type: "video",
-    videoUrl: "https://assets.mixkit.co/videos/42488/42488-720.mp4",
-    fallbackImage: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=2000&auto=format&fit=crop",
-    title: "Tropical Ocean Sanctuaries",
-    location: "Bentota & Mirissa Bay",
-    tag: "South Coast Waters",
-  },
-  {
-    type: "video",
-    videoUrl: "https://assets.mixkit.co/videos/1496/1496-720.mp4",
+    videoUrl: "https://assets.mixkit.co/videos/11072/11072-720.mp4",
     fallbackImage: "https://images.unsplash.com/photo-1612862862126-865765df2ded?q=80&w=2000&auto=format&fit=crop",
-    title: "Ancient Rock in the Sky",
-    location: "Sigiriya Fortress Citadel",
-    tag: "Cultural Triangle",
+    title: "Sigiriya Lion Rock Citadel",
+    location: "Sigiriya & Royal Water Gardens",
+    tag: "UNESCO World Heritage",
   },
   {
     type: "video",
-    videoUrl: "https://assets.mixkit.co/videos/42283/42283-720.mp4",
+    videoUrl: "https://assets.mixkit.co/videos/1622/1622-720.mp4",
     fallbackImage: "https://images.unsplash.com/photo-1546708973-b339540b5162?q=80&w=2000&auto=format&fit=crop",
-    title: "Misty Emerald Highlands",
-    location: "Nine Arch Bridge, Ella",
-    tag: "Tea Country",
+    title: "Ella Nine Arch Bridge & Blue Train",
+    location: "Misty Mountain Tea Country",
+    tag: "Scenic Ceylon Railway",
   },
   {
     type: "video",
-    videoUrl: "https://assets.mixkit.co/videos/42168/42168-720.mp4",
-    fallbackImage: "https://images.unsplash.com/photo-1561731216-c3a4d99437d5?q=80&w=2000&auto=format&fit=crop",
-    title: "Wild Leopards & Coast",
-    location: "Yala National Park",
-    tag: "Untamed Safari",
+    videoUrl: "https://assets.mixkit.co/videos/11088/11088-720.mp4",
+    fallbackImage: "https://images.unsplash.com/photo-1557050543-4d5f4e07ef46?q=80&w=2000&auto=format&fit=crop",
+    title: "Wild Elephant & Leopard Safari",
+    location: "Yala & Minneriya Wildlife Reserves",
+    tag: "Untamed Ceylon Wildlife",
+  },
+  {
+    type: "video",
+    videoUrl: "https://assets.mixkit.co/videos/5016/5016-720.mp4",
+    fallbackImage: "https://images.unsplash.com/photo-1580674285054-bed31e145f59?q=80&w=2000&auto=format&fit=crop",
+    title: "Stilt Fishermen & Golden Coast",
+    location: "Mirissa, Weligama & Galle Fort",
+    tag: "Southern Indian Ocean",
   },
 ];
 
@@ -137,7 +137,7 @@ export default function HeroCinema({ onSelectDeparture, onOpenArchitect }: HeroC
           <span>FLY CHEAPER &bull; FLY SMARTER</span>
         </div>
 
-        {/* High-Impact Modern Headline (No newspaper serif, pure Outfit modern sans) */}
+        {/* High-Impact Modern Headline */}
         <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight font-display leading-[1.08] max-w-4xl">
           AUSTRALIA TO <br />
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-fly-orange via-amber-200 to-fly-cyan">
@@ -147,7 +147,7 @@ export default function HeroCinema({ onSelectDeparture, onOpenArchitect }: HeroC
 
         {/* Minimal 1-Line Tagline */}
         <p className="mt-4 text-sm sm:text-lg text-slate-200 max-w-xl font-medium tracking-wide">
-          Bespoke flights from Melbourne & Sydney bundled with luxury villas, private drivers, and custom tours.
+          Direct flights from Melbourne & Sydney bundled with boutique Ceylon stays, private chauffeurs, and bespoke tours.
         </p>
 
         {/* Minimal Visual Badges */}
@@ -156,7 +156,7 @@ export default function HeroCinema({ onSelectDeparture, onOpenArchitect }: HeroC
             ✈️ MEL &bull; SYD &bull; BNE &bull; PER &bull; ADL
           </span>
           <span className="px-3 py-1 rounded-full bg-white/15 backdrop-blur-md border border-white/20">
-            🏝️ 5★ Handpicked Resorts
+            🏝️ Handpicked Ceylon Resorts
           </span>
           <span className="px-3 py-1 rounded-full bg-fly-orange/80 backdrop-blur-md border border-fly-orange text-white">
             ★ Best Price In AUD
