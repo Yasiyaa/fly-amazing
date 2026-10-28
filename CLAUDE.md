@@ -15,6 +15,10 @@ On Windows PowerShell use `npm.cmd` / `npx.cmd` (execution policy blocks the `.p
 
 There is no test framework. Verify changes by building and by driving the page in the browser.
 
+## Commits
+
+Do not add a `Co-Authored-By` trailer (Claude or anyone else) to commits in this repo. The Vercel project is on the Hobby plan, which blocks deploys of co-authored commits from a private repo.
+
 ## Architecture
 
 - **No backend data layer.** All catalog content is static TypeScript in `src/data/` (`CURATED_PACKAGES`, `HOTELS_CATALOG`, `SRI_LANKA_DESTINATIONS`, `AUSTRALIAN_AIRPORTS`). Hotels link to destinations via `Hotel.destinationId`; packages are looked up by `id` from the `/packages/[id]` route. Adding content means editing these arrays.
