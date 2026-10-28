@@ -187,7 +187,7 @@ export default function Footer() {
 
         {/* Bottom Bar */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs sm:text-sm text-slate-400 space-y-4 sm:space-y-0 font-light">
-          <p>© {new Date().getFullYear()} Fly Amazing Australia Pty Ltd. Slogan: "fly cheaper, fly smarter".</p>
+          <p>© {new Date().getFullYear()} Fly Amazing Australia Pty Ltd. Slogan: &ldquo;fly cheaper, fly smarter&rdquo;.</p>
           <div className="flex items-center space-x-6">
             <span>Australian Business Standard</span>
             <span>Privacy Policy</span>
