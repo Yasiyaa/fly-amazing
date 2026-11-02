@@ -1,7 +1,7 @@
-# AGENTS.md - Fly Amazing Architecture & Agent Guardrails
+# AGENTS.md - Amazing World Travel Architecture & Agent Guardrails
 
 ## ✈️ Project Overview
-**Fly Amazing** is a modern Next.js 14 travel and tour booking web application tailored for Australian travelers booking flights and bespoke holiday packages in Sri Lanka.
+**Amazing World Travel** is a Colombo-based tour operator. This Next.js 14 site sells private, tailor-made Sri Lanka tours to travellers worldwide, with a booking system, an AI trip planner and an admin area.
 
 ---
 
@@ -14,7 +14,9 @@
 | Styling | Tailwind CSS 3.4, PostCSS, Autoprefixer |
 | Animation / Effects | Framer Motion, Lenis (Smooth Scroll) |
 | Icons | Lucide React |
-| Backend / API | Next.js Route Handlers (`src/app/api/`) & Nodemailer |
+| Backend / API | Next.js Route Handlers (`src/app/api/`), Supabase (Postgres, Auth, Storage), Nodemailer |
+| AI trip planner | Anthropic TypeScript SDK (Claude, tool use, streaming) |
+| Validation | Zod |
 | Package Manager | `npm` |
 
 ---
@@ -40,21 +42,23 @@
    - Keep data-fetching and static metadata generation in Server Components where possible; delegate interactive UI islands to Client Components in `src/components/`.
 
 2. **Directory Structure**:
-   - `src/app/`: App router routes (`/flights`, `/destinations`, `/packages`, `/tour-architect`, `/contact`, `/api/inquiry`).
-   - `src/components/architect/`: Tour Architect customizer studio and review drawers.
-   - `src/components/home/`: Landing page sections (hero, booking island, showcase, testimonials).
-   - `src/components/inquiry/`: Booking confirmation and finalization modals.
-   - `src/components/layout/`: Shared layout elements (Navbar, Footer, SmoothScrollProvider).
-   - `src/components/transition/`: Animated flight route transition overlays.
-   - `src/data/`: Centralized domain datasets (`packages.ts`, `hotels.ts`, `destinations.ts`, `australianAirports.ts`).
-   - `src/lib/`: Utilities and shared services (`emailService.ts`, `utils.ts`).
+   - `src/app/`: routes (`/tours`, `/tours/[slug]`, `/book/[slug]`, `/booking`, `/destinations`, `/tour-architect`, `/plan`, `/contact`, `/admin/*`) and API routes (`/api/bookings`, `/api/enquiries`, `/api/chat`, `/api/cron/fx`).
+   - `src/components/architect/`: Tour Architect studio, hotel drawer, trip request modal.
+   - `src/components/admin/`: admin forms (tours, media uploads, settings, booking status).
+   - `src/components/booking/`, `tours/`, `destinations/`, `contact/`: page islands.
+   - `src/components/planner/`: AI planner chat and floating widget.
+   - `src/components/home/`, `layout/`, `ui/`, `currency/`, `transition/`: home sections, shell, shared UI, currency switcher, intro overlay.
+   - `src/data/seed/`: bundled catalogue (tours, destinations, hotels). Seeds Supabase and is the fallback when the database isn't configured.
+   - `src/lib/`: data layer (`catalog.ts`), pricing, bookings, email, validation, Supabase clients, planner tools and prompt.
+   - `supabase/migrations/`: schema, row-level security and storage policies.
 
 3. **Data Integrity & Pricing**:
-   - Currency convention is Australian Dollars (AUD).
-   - All booking inquiry payloads generate a unique tracking token matching the format `FA-SL-XXXX`.
-   - Dynamic hotel and package pricing calculation formulas must preserve baseline and season multiplier rules.
+   - Prices are stored, quoted and charged in US dollars. Other currencies are display-only conversions.
+   - Booking references use the format `AWT-XXXXX` (enquiries `ENQ-XXXXX`) and are always generated on the server.
+   - All prices are computed on the server from catalogue data in `src/lib/pricing.ts`; never trust a price sent by the browser or produced by the AI planner.
 
 4. **Environment Variables**:
    - Configuration is mirrored in `.env.example` and applied locally in `.env.local`.
    - Never commit `.env` or `.env*.local` files.
-   - If SMTP credentials are not configured, inquiry workflows must fallback gracefully by logging inquiries safely without failing requests.
+   - If SMTP credentials are not configured, booking and enquiry workflows must fall back gracefully by logging instead of failing requests.
+   - Without Supabase keys the public site must still render from `src/data/seed`; without `ANTHROPIC_API_KEY` the planner shows a contact fallback.

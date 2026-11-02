@@ -22,8 +22,9 @@ export default async function ToursPage() {
         eyebrow="Tours"
         title="Private Sri Lanka tours"
         subtitle="Every tour comes with your own chauffeur-guide and handpicked hotels, and can be adjusted to your dates, pace and budget."
-        image="/images/yves-alarie-3R50kTNBKiE-unsplash.jpg"
-        imageAlt="Blue train crossing the Nine Arch Bridge in Ella"
+        image="https://images.unsplash.com/photo-1559038298-ef4eecdfdbb3?q=80&w=2000&auto=format&fit=crop"
+        imageAlt="Misty tea-country hills"
+        video="https://assets.mixkit.co/videos/11193/11193-720.mp4"
       />
 
       <ToursExplorer tours={tours} />

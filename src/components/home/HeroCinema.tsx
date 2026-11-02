@@ -12,17 +12,34 @@ export default function HeroCinema({ videos }: { videos: SiteSettings["heroVideo
   const [currentScene, setCurrentScene] = useState(0);
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
 
-  useEffect(() => {
-    if (videos.length < 2 || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const timer = setInterval(() => setCurrentScene((prev) => (prev + 1) % videos.length), SCENE_DURATION_MS);
-    return () => clearInterval(timer);
-  }, [videos.length]);
+  const [motionOk, setMotionOk] = useState(true);
 
   useEffect(() => {
+    // Posters only for reduced motion or Save-Data visitors.
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData;
+    setMotionOk(!reduce && !saveData);
+  }, []);
+
+  useEffect(() => {
+    if (videos.length < 2 || !motionOk) return;
+    const timer = setInterval(() => setCurrentScene((prev) => (prev + 1) % videos.length), SCENE_DURATION_MS);
+    return () => clearInterval(timer);
+  }, [videos.length, motionOk]);
+
+  useEffect(() => {
+    if (!motionOk) {
+      videoRefs.current.forEach((v) => v?.pause());
+      return;
+    }
     videoRefs.current[currentScene]?.play().catch(() => undefined);
-    const next = videoRefs.current[(currentScene + 1) % videos.length];
-    if (next && next.preload !== "auto") next.preload = "auto";
-  }, [currentScene, videos.length]);
+    // Start fetching the next clip a few seconds in, so only one video downloads at a time.
+    const t = setTimeout(() => {
+      const next = videoRefs.current[(currentScene + 1) % videos.length];
+      if (next && next.preload !== "auto") next.preload = "auto";
+    }, 3000);
+    return () => clearTimeout(t);
+  }, [currentScene, videos.length, motionOk]);
 
   const scene = videos[currentScene];
 
@@ -36,11 +53,11 @@ export default function HeroCinema({ videos }: { videos: SiteSettings["heroVideo
           }}
           src={item.url}
           poster={item.poster}
-          autoPlay={idx === 0}
+          autoPlay={idx === 0 && motionOk}
           loop
           muted
           playsInline
-          preload={idx <= 1 ? "auto" : "metadata"}
+          preload={idx === 0 ? "auto" : "none"}
           aria-hidden="true"
           className={cn(
             "absolute inset-0 -z-20 h-full w-full object-cover transition-opacity duration-1000 ease-in-out",

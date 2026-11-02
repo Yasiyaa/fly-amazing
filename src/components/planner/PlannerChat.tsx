@@ -56,12 +56,16 @@ export default function PlannerChat({ initialPrompt, compact = false }: { initia
   const [requesting, setRequesting] = useState<Itinerary | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const sentInitial = useRef(false);
+  const restored = useRef(false);
+  const [ready, setReady] = useState(false);
 
-  // Restore the conversation for this browser tab.
+  // Restore this tab's conversation once. A new ?q= prompt starts a fresh chat instead.
   useEffect(() => {
+    if (restored.current) return;
+    restored.current = true;
     try {
       const saved = sessionStorage.getItem(SESSION_KEY);
-      if (saved) {
+      if (saved && !initialPrompt) {
         const parsed = JSON.parse(saved) as { messages: ChatMessage[]; sessionId?: string };
         setMessages(parsed.messages ?? []);
         setSessionId(parsed.sessionId);
@@ -69,16 +73,18 @@ export default function PlannerChat({ initialPrompt, compact = false }: { initia
     } catch {
       // ignore
     }
-  }, []);
+    setReady(true);
+  }, [initialPrompt]);
 
   useEffect(() => {
+    if (!ready) return;
     try {
       sessionStorage.setItem(SESSION_KEY, JSON.stringify({ messages: messages.slice(-40), sessionId }));
     } catch {
       // ignore
     }
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
-  }, [messages, sessionId, status]);
+  }, [messages, sessionId, status, ready]);
 
   const send = useCallback(
     async (text: string) => {
@@ -143,11 +149,11 @@ export default function PlannerChat({ initialPrompt, compact = false }: { initia
   );
 
   useEffect(() => {
-    if (initialPrompt && !sentInitial.current && messages.length === 0) {
+    if (ready && initialPrompt && !sentInitial.current) {
       sentInitial.current = true;
       void send(initialPrompt);
     }
-  }, [initialPrompt, messages.length, send]);
+  }, [ready, initialPrompt, send]);
 
   const reset = () => {
     setMessages([]);

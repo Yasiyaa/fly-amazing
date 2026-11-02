@@ -26,7 +26,7 @@ export default async function HomePage() {
         <div className="container-page">
           <SectionHeader
             eyebrow="Signature tours"
-            title="Journeys our guests love most"
+            title="Our signature Sri Lanka tours"
             description="Private tours with your own chauffeur-guide and handpicked hotels. Every one can be adjusted to your dates and pace."
           />
           <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">

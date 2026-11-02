@@ -24,8 +24,9 @@ export default async function DestinationsPage() {
         eyebrow="Destination guide"
         title="Sri Lanka, region by region"
         subtitle="Ancient cities, misty tea country, leopard-filled national parks and two coasts with opposite seasons, all within a few hours of each other."
-        image="https://images.unsplash.com/photo-1544015759-237f87d55ef3?q=80&w=2000&auto=format&fit=crop"
-        imageAlt="Aerial view of a Sri Lankan tea estate"
+        image="/images/posters/south-coast-beach.jpg"
+        imageAlt="Aerial view of a palm-fringed beach on the south coast"
+        video="/videos/web/south-coast-beach.mp4"
       />
       <DestinationsExplorer destinations={destinations} toursByDestination={toursByDestination} />
       <Footer />

@@ -34,11 +34,11 @@ const IMG = {
 
 const VIDEO = {
   tea: "https://assets.mixkit.co/videos/11193/11193-720.mp4",
-  elephants: "/videos/wildlife-elephant.mp4",
-  beach: "/videos/vecteezy_aerial-view-of-sand-beach-and-water-surface-texture-foamy_7515199.mp4",
-  palms: "/videos/coconut-palms.mp4",
+  elephants: "https://assets.mixkit.co/videos/11059/11059-720.mp4",
+  beach: "/videos/web/south-coast-beach.mp4",
+  palms: "/videos/web/coconut-palms.mp4",
   eastBeach: "https://assets.mixkit.co/videos/11376/11376-720.mp4",
-  rainforest: "/videos/vecteezy_aerial-view-of-person-walking-on-bamboo-bridge-amidst-lush_78250928.mp4",
+  rainforest: "/videos/web/rainforest-bridge.mp4",
 };
 
 const INCLUDED = [
@@ -71,7 +71,7 @@ export const TOURS: Tour[] = [
     themes: ["culture", "hill-country", "wildlife", "beach"],
     route: ["Negombo", "Sigiriya", "Kandy", "Nuwara Eliya", "Ella", "Yala", "Mirissa", "Galle", "Colombo"],
     destinationIds: ["negombo", "sigiriya", "kandy", "nuwara-eliya", "ella", "yala", "mirissa", "galle", "colombo"],
-    bestSeason: "December to April",
+    bestSeason: "Dec–Apr",
     seasonMonths: [12, 1, 2, 3, 4],
     prices: { comfort: 2040, superior: 2550, luxury: 6650 },
     highlights: [
@@ -155,7 +155,7 @@ export const TOURS: Tour[] = [
     themes: ["culture", "hill-country"],
     route: ["Negombo", "Anuradhapura", "Sigiriya", "Polonnaruwa", "Kandy", "Nuwara Eliya", "Ella", "Colombo"],
     destinationIds: ["negombo", "ancient-cities", "sigiriya", "kandy", "nuwara-eliya", "ella", "colombo"],
-    bestSeason: "Year-round (driest January to September)",
+    bestSeason: "Year-round",
     seasonMonths: [1, 2, 3, 4, 5, 6, 7, 8, 9],
     prices: { comfort: 1480, superior: 1850, luxury: 4800 },
     highlights: [
@@ -195,7 +195,7 @@ export const TOURS: Tour[] = [
     themes: ["wildlife", "adventure"],
     route: ["Wilpattu", "Sigiriya", "Udawalawe", "Yala", "Colombo"],
     destinationIds: ["wilpattu", "sigiriya", "udawalawe", "yala", "colombo"],
-    bestSeason: "February to July, and October to November",
+    bestSeason: "Feb–Jul, Oct–Nov",
     seasonMonths: [2, 3, 4, 5, 6, 7, 10, 11],
     prices: { comfort: 1360, superior: 1700, luxury: 4400 },
     highlights: [
@@ -234,7 +234,7 @@ export const TOURS: Tour[] = [
     themes: ["hill-country", "adventure"],
     route: ["Kandy", "Nuwara Eliya", "Ella", "Colombo"],
     destinationIds: ["kandy", "nuwara-eliya", "ella", "colombo"],
-    bestSeason: "January to April",
+    bestSeason: "Jan–Apr",
     seasonMonths: [1, 2, 3, 4],
     prices: { comfort: 840, superior: 1050, luxury: 2700 },
     highlights: [
@@ -270,7 +270,7 @@ export const TOURS: Tour[] = [
     themes: ["honeymoon", "hill-country", "beach"],
     route: ["Kandy", "Tea estate", "Ella", "Galle", "Tangalle", "Colombo"],
     destinationIds: ["kandy", "nuwara-eliya", "ella", "galle", "tangalle", "colombo"],
-    bestSeason: "December to April",
+    bestSeason: "Dec–Apr",
     seasonMonths: [12, 1, 2, 3, 4],
     prices: { comfort: 1920, superior: 2400, luxury: 6200 },
     highlights: [
@@ -311,7 +311,7 @@ export const TOURS: Tour[] = [
     themes: ["family", "wildlife", "beach"],
     route: ["Negombo", "Sigiriya", "Kandy", "Ella", "Yala", "Bentota", "Colombo"],
     destinationIds: ["negombo", "sigiriya", "kandy", "ella", "yala", "bentota", "colombo"],
-    bestSeason: "December to April, and July to August",
+    bestSeason: "Dec–Apr, Jul–Aug",
     seasonMonths: [12, 1, 2, 3, 4, 7, 8],
     prices: { comfort: 1400, superior: 1750, luxury: 4500 },
     highlights: [
@@ -353,7 +353,7 @@ export const TOURS: Tour[] = [
     themes: ["wellness", "beach"],
     route: ["Bentota", "Galle", "Colombo"],
     destinationIds: ["bentota", "galle", "colombo"],
-    bestSeason: "Year-round (west coast is sunniest December to April)",
+    bestSeason: "Year-round",
     seasonMonths: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
     prices: { comfort: 1040, superior: 1300, luxury: 3400 },
     highlights: [
@@ -396,7 +396,7 @@ export const TOURS: Tour[] = [
     themes: ["beach", "culture", "adventure"],
     route: ["Sigiriya", "Trincomalee", "Pasikudah", "Arugam Bay", "Ella", "Colombo"],
     destinationIds: ["sigiriya", "trincomalee", "arugam-bay", "ella", "colombo"],
-    bestSeason: "May to September",
+    bestSeason: "May–Sep",
     seasonMonths: [5, 6, 7, 8, 9],
     prices: { comfort: 1280, superior: 1600, luxury: 4150 },
     highlights: [

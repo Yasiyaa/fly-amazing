@@ -21,8 +21,9 @@ export default async function TourArchitectPage({ searchParams }: { searchParams
         eyebrow="Tour Architect"
         title="Build your Sri Lanka tour"
         subtitle="Pick your destinations, set the pace and choose your hotels. Your estimate updates live, and a specialist checks every detail before you pay."
-        image="https://images.unsplash.com/photo-1580794749460-76f97b7180d8?q=80&w=2000&auto=format&fit=crop"
-        imageAlt="Road towards Sigiriya rock"
+        image="/images/posters/rainforest-bridge.jpg"
+        imageAlt="Rainforest canopy with a walking trail"
+        video="/videos/web/rainforest-bridge.mp4"
       />
       <TourArchitectStudio destinations={destinations} hotels={hotels} requestedDestinationId={add} />
       <Footer />

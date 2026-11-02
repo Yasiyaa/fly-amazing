@@ -1,78 +1,18 @@
-# Fly Amazing ✈️🇱🇰
+# Amazing World Travel
 
-> **"fly cheaper • fly smarter"**  
-> Australia's premier flight and custom holiday booking platform for Sri Lanka.
+Website for **Amazing World Travel**, a Colombo-based operator of private, tailor-made Sri Lanka tours for travellers worldwide. Unit 94D, 75 Galle Road, Colombo 03 · info@amazingworldtravel.com
 
-Fly Amazing connects Australian travelers (departing from Melbourne, Sydney, Brisbane, Perth, and Adelaide) with direct & one-stop flights to Colombo (CMB) and offers bespoke, end-to-end curated holiday voyages across Sri Lanka.
+**Features:** 10-tour catalogue with day-by-day itineraries, USD pricing with a currency switcher, booking requests with `AWT-XXXXX` references, a Tour Architect for custom routes, an AI trip planner (Claude) grounded in the catalogue, and an admin area for bookings, tours, media uploads and site settings.
 
----
+**Stack:** Next.js 14 (App Router), TypeScript, Tailwind, Supabase (Postgres, Auth, Storage), Anthropic SDK, Nodemailer. Hosted on Vercel.
 
-## ✨ Features
+## Run, build, deploy
 
-- **Multi-City Flight Search & Pricing**: Live comparison of Australian departures to Colombo with trusted airline partners (SriLankan Airlines, Singapore Airlines, Malaysia Airlines).
-- **Curated Holiday Voyages**: Handcrafted multi-day packages (*Emerald Highland & Tea Odyssey*, *Kingdoms of Stone & Golden Sands*, *Wild Ceylon Leopard Safari*, *Southern Serenity & Blue Whales*) with detailed day-by-day dossiers and dynamic AUD pricing.
-- **Interactive Tour Architect Studio**: Custom route planner with interactive stay sliders, dynamic nearby hotel suggestions with verified guest reviews, and a persistent live AUD cost ticker.
-- **Dynamic Inquiry Dispatch**: Direct booking inquiries generated with unique tracking tokens (`FA-SL-XXXX`) and dispatched directly to the concierge team.
-- **Cinematic Animated Transitions**: Brand-tailored flight transition curtain with an aerodynamic jetliner soaring across a sunrise flight path.
-- **Mobile-First Responsive Design**: Optimized for desktop, tablet, and mobile with high-contrast accessibility and modern UI aesthetics.
+1. `npm install`, then copy `.env.example` to `.env.local` and fill it in (everything is optional for a first look).
+2. `npm run dev` → http://localhost:3000 (runs on bundled data until Supabase is configured).
+3. Database: apply `supabase/migrations/0001_init.sql` in the Supabase SQL editor, then `node --env-file=.env.local scripts/seed.mjs`.
+4. First admin: create a user in Supabase Auth, then `insert into staff (user_id, email, role) values ('<user id>', '<email>', 'owner');`. Sign in at `/admin`.
+5. `npm run build` checks types, lint and builds. `npm run start` serves the build.
+6. Deploy: push to GitHub; Vercel builds automatically. Set the same environment variables in Vercel. `vercel.json` schedules the daily exchange-rate refresh.
 
----
-
-## 🛠️ Tech Stack
-
-- **Framework**: [Next.js 14](https://nextjs.org/) (App Router, React Server Components)
-- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
-- **Animations**: [Framer Motion](https://www.framer.com/motion/)
-- **Icons**: [Lucide React](https://lucide.dev/)
-- **Typography**: Outfit (headlines) & Plus Jakarta Sans (UI) via `next/font`
-- **Language**: TypeScript
-
----
-
-## 🚀 Getting Started
-
-### Prerequisites
-
-- Node.js 18.17+ or later
-- npm or yarn
-
-### Installation
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/Yasiyaa/fly-amazing.git
-   cd fly-amazing
-   ```
-
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-
-3. Set up environment variables:
-   Copy `.env.example` to `.env.local` and configure your settings:
-   ```bash
-   cp .env.example .env.local
-   ```
-
-4. Run the development server:
-   ```bash
-   npm run dev
-   ```
-
-5. Open [http://localhost:3000](http://localhost:3000) with your browser to view the site.
-
----
-
-## 📦 Build for Production
-
-```bash
-npm run build
-npm run start
-```
-
----
-
-## 📄 License
-
-Private & Proprietary. All rights reserved by Fly Amazing Australia.
+Private & proprietary. All rights reserved by Amazing World Travel.

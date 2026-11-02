@@ -33,8 +33,9 @@ export default async function ContactPage() {
         eyebrow="Contact"
         title="Talk to a Sri Lanka specialist"
         subtitle="Tell us your dates, who's travelling and what you'd love to see. Our Colombo team will come back with ideas and a tailored proposal."
-        image="https://images.unsplash.com/photo-1559038298-ef4eecdfdbb3?q=80&w=2000&auto=format&fit=crop"
-        imageAlt="Tea plantation hills in Sri Lanka"
+        image="/images/posters/coconut-palms.jpg"
+        imageAlt="Coconut palms against a blue sky"
+        video="/videos/web/coconut-palms.mp4"
       />
 
       <section className="container-page relative z-10 -mt-16 pb-24">

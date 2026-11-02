@@ -46,7 +46,7 @@ const CINEMA_CARDS: CinemaCard[] = [
     title: "Emerald canopy trails",
     subtitle: "Rainforest walks and bamboo bridges",
     tag: "Highland rainforest",
-    videoUrl: "/videos/vecteezy_aerial-view-of-person-walking-on-bamboo-bridge-amidst-lush_78250928.mp4",
+    videoUrl: "/videos/web/rainforest-bridge.mp4",
   },
 ];
 
