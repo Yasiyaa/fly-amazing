@@ -4,21 +4,15 @@ import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Plus } from "lucide-react";
-import { SRI_LANKA_DESTINATIONS, Destination } from "@/data/destinations";
+import type { Destination } from "@/lib/types";
 import SectionHeader from "@/components/ui/SectionHeader";
 import { cn } from "@/lib/utils";
 
-interface DestinationShowcaseProps {
-  onAddToTour: (dest: Destination) => void;
-}
-
-const REGIONS = ["All", ...Array.from(new Set(SRI_LANKA_DESTINATIONS.map((d) => d.region)))];
-
-export default function DestinationShowcase({ onAddToTour }: DestinationShowcaseProps) {
+export default function DestinationShowcase({ destinations }: { destinations: Destination[] }) {
   const [selectedRegion, setSelectedRegion] = useState("All");
+  const regions = ["All", ...Array.from(new Set(destinations.map((d) => d.region)))];
 
-  const filtered =
-    selectedRegion === "All" ? SRI_LANKA_DESTINATIONS : SRI_LANKA_DESTINATIONS.filter((d) => d.region === selectedRegion);
+  const filtered = selectedRegion === "All" ? destinations : destinations.filter((d) => d.region === selectedRegion);
 
   // Widen tiles so the 3-column grid never leaves an orphaned gap
   const wideCount = (3 - (filtered.length % 3)) % 3;
@@ -30,11 +24,11 @@ export default function DestinationShowcase({ onAddToTour }: DestinationShowcase
         <SectionHeader
           eyebrow="Destinations"
           title="Where Sri Lanka will take you"
-          description="Nine regions, each a few hours apart. Add any of them straight to your tour."
+          description={`${destinations.length} places, each a few hours apart. Add any of them straight to your own tour.`}
         />
 
         <div className="no-scrollbar -mx-5 mt-8 flex gap-2 overflow-x-auto px-5 sm:mx-0 sm:flex-wrap sm:px-0">
-          {REGIONS.map((reg) => (
+          {regions.map((reg) => (
             <button
               key={reg}
               type="button"
@@ -77,15 +71,14 @@ export default function DestinationShowcase({ onAddToTour }: DestinationShowcase
 
                 <span className="chip-glass pointer-events-none absolute left-4 top-4">{dest.region}</span>
 
-                <button
-                  type="button"
-                  onClick={() => onAddToTour(dest)}
+                <Link
+                  href={`/tour-architect?add=${dest.id}`}
                   className="absolute right-4 top-4 inline-flex h-9 items-center gap-1.5 rounded-full bg-white/15 px-3 text-xs font-semibold text-white backdrop-blur-md transition-colors hover:bg-fly-orange"
                   aria-label={`Add ${dest.name} to my tour`}
                 >
                   <Plus className="h-4 w-4" />
                   <span className="hidden sm:inline">Add to tour</span>
-                </button>
+                </Link>
 
                 <div className="pointer-events-none absolute inset-x-5 bottom-5 text-white">
                   <h3 className="text-2xl font-bold">{dest.name}</h3>

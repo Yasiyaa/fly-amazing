@@ -1,88 +1,75 @@
-"use client";
-
-import React, { useState } from "react";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import { useLenis } from "@/components/layout/SmoothScrollProvider";
 import HeroCinema from "@/components/home/HeroCinema";
 import CinematicReelWall from "@/components/home/CinematicReelWall";
-import CuratedVoyages from "@/components/home/CuratedVoyages";
 import PanoramicBannerBreak from "@/components/home/PanoramicBannerBreak";
 import DestinationShowcase from "@/components/home/DestinationShowcase";
-import WhyFlyAmazing from "@/components/home/WhyFlyAmazing";
-import TourArchitectStudio from "@/components/architect/TourArchitectStudio";
-import TourFinalizeModal, { FinalizeTourData } from "@/components/inquiry/TourFinalizeModal";
-import { AustralianAirport, AUSTRALIAN_AIRPORTS } from "@/data/australianAirports";
-import { CuratedPackage } from "@/data/packages";
-import { Destination } from "@/data/destinations";
-import { scrollToId } from "@/lib/useOverlay";
+import WhyUs from "@/components/home/WhyUs";
+import PlannerPromo from "@/components/home/PlannerPromo";
+import SectionHeader from "@/components/ui/SectionHeader";
+import TourCard from "@/components/ui/TourCard";
+import { getDestinations, getSiteSettings, getTours } from "@/lib/catalog";
 
-export default function HomePage() {
-  const lenis = useLenis();
-  const [selectedAirport, setSelectedAirport] = useState<AustralianAirport>(AUSTRALIAN_AIRPORTS[0]);
-  const [requestedDestination, setRequestedDestination] = useState<{ id: string; nonce: number } | null>(null);
-  const [isFinalizeModalOpen, setIsFinalizeModalOpen] = useState(false);
-  const [modalTourData, setModalTourData] = useState<FinalizeTourData | null>(null);
-
-  const openArchitect = () => scrollToId("tour-architect", lenis);
-
-  const handleBookCuratedPackage = (pkg: CuratedPackage) => {
-    setModalTourData({
-      type: "package",
-      packageName: pkg.title,
-      curatedPackage: pkg,
-      totalDays: pkg.durationDays,
-      totalNights: pkg.durationNights,
-      departureAirport: selectedAirport,
-      totalEstimatedAUD: pkg.priceAUD,
-    });
-    setIsFinalizeModalOpen(true);
-  };
-
-  const handleAddDestinationToTour = (dest: Destination) => {
-    setRequestedDestination({ id: dest.id, nonce: Date.now() });
-    openArchitect();
-  };
+export default async function HomePage() {
+  const [tours, destinations, settings] = await Promise.all([getTours(), getDestinations(), getSiteSettings()]);
+  const featured = tours.filter((t) => t.featured).slice(0, 6);
 
   return (
     <main className="min-h-screen bg-white">
       <Navbar />
 
-      <HeroCinema onSelectDeparture={setSelectedAirport} onOpenArchitect={openArchitect} />
+      <HeroCinema videos={settings.heroVideos} />
 
-      <CuratedVoyages onBookPackage={handleBookCuratedPackage} />
+      <section className="section bg-slate-50">
+        <div className="container-page">
+          <SectionHeader
+            eyebrow="Signature tours"
+            title="Journeys our guests love most"
+            description="Private tours with your own chauffeur-guide and handpicked hotels. Every one can be adjusted to your dates and pace."
+          />
+          <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {featured.map((tour) => (
+              <TourCard key={tour.slug} tour={tour} />
+            ))}
+          </div>
+          <div className="mt-12 text-center">
+            <Link href="/tours" className="btn-navy btn-lg">
+              See all {tours.length} tours
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+        </div>
+      </section>
 
       <CinematicReelWall />
 
-      <TourArchitectStudio
-        initialAirport={selectedAirport}
-        requestedDestination={requestedDestination}
-        onFinalizeTour={(tour) => {
-          setModalTourData({ type: "custom", ...tour });
-          setIsFinalizeModalOpen(true);
-        }}
-      />
+      <PlannerPromo />
 
       <PanoramicBannerBreak
         image="/images/yves-alarie-3R50kTNBKiE-unsplash.jpg"
-        eyebrow="Central Highlands"
+        eyebrow="Hill country"
         title="Ride the blue train through the tea country"
         subtitle="The Nine Arch Bridge, misty tea estates and colonial hill stations, on one of the world's most scenic rail journeys."
-        actionText="Explore hill-country packages"
-        href="/packages/emerald-highland-tea-odyssey"
+        actionText="See the tea country tour"
+        href="/tours/tea-country-and-scenic-rail"
       />
 
-      <DestinationShowcase onAddToTour={handleAddDestinationToTour} />
+      <DestinationShowcase destinations={destinations} />
 
-      <WhyFlyAmazing />
+      <WhyUs />
+
+      <PanoramicBannerBreak
+        image="/images/udara-karunarathna-MXY2UUe1C4g-unsplash.jpg"
+        eyebrow="Build your own"
+        title="Your route, your hotels, your pace"
+        subtitle="Pick destinations, set the nights and choose your hotels in the Tour Architect, with a live price as you go."
+        actionText="Open the Tour Architect"
+        href="/tour-architect"
+      />
 
       <Footer />
-
-      <TourFinalizeModal
-        isOpen={isFinalizeModalOpen}
-        onClose={() => setIsFinalizeModalOpen(false)}
-        tourData={modalTourData}
-      />
     </main>
   );
 }

@@ -221,11 +221,11 @@ export default function FlightTransitionOverlay() {
             >
               {/* Slogan Pill */}
               <div className="inline-flex items-center rounded-full border border-white/30 bg-white/20 px-5 py-1.5 text-xs font-semibold uppercase tracking-[0.25em] text-white shadow-lg backdrop-blur-md sm:text-sm">
-                <span>fly cheaper &bull; fly smarter</span>
+                <span>Amazing World Travel</span>
               </div>
 
               <div className="text-xl sm:text-3xl font-display font-bold tracking-tight text-white drop-shadow-md">
-                Flying you to Sri Lanka
+                Welcome to Sri Lanka
               </div>
 
               {/* Progress Indicator Bar */}

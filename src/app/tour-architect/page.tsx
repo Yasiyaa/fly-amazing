@@ -1,50 +1,31 @@
-"use client";
-
-import React, { useEffect, useState } from "react";
+import type { Metadata } from "next";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import PageHero from "@/components/ui/PageHero";
 import TourArchitectStudio from "@/components/architect/TourArchitectStudio";
-import TourFinalizeModal, { FinalizeTourData } from "@/components/inquiry/TourFinalizeModal";
+import { getDestinations, getHotels } from "@/lib/catalog";
 
-export default function TourArchitectPage() {
-  const [isFinalizeModalOpen, setIsFinalizeModalOpen] = useState(false);
-  const [modalTourData, setModalTourData] = useState<FinalizeTourData | null>(null);
-  const [requestedDestination, setRequestedDestination] = useState<{ id: string; nonce: number } | null>(null);
+export const metadata: Metadata = {
+  title: "Build your own Sri Lanka tour",
+  description: "Choose your destinations, nights and hotels and see a live price for your private Sri Lanka tour.",
+};
 
-  // Support deep links such as /tour-architect?add=ella from destination pages
-  useEffect(() => {
-    const id = new URLSearchParams(window.location.search).get("add");
-    if (id) setRequestedDestination({ id, nonce: Date.now() });
-  }, []);
+export default async function TourArchitectPage({ searchParams }: { searchParams: { add?: string } }) {
+  const [destinations, hotels] = await Promise.all([getDestinations(), getHotels()]);
+  const add = typeof searchParams.add === "string" && /^[a-z0-9-]{1,60}$/.test(searchParams.add) ? searchParams.add : null;
 
   return (
     <main className="min-h-screen bg-white">
       <Navbar />
-
       <PageHero
         eyebrow="Tour Architect"
         title="Build your Sri Lanka tour"
-        subtitle="Pick your destinations, set the pace and choose hotels with real guest reviews. Your estimate updates live in AUD."
+        subtitle="Pick your destinations, set the pace and choose your hotels. Your estimate updates live, and a specialist checks every detail before you pay."
         image="https://images.unsplash.com/photo-1580794749460-76f97b7180d8?q=80&w=2000&auto=format&fit=crop"
         imageAlt="Road towards Sigiriya rock"
       />
-
-      <TourArchitectStudio
-        requestedDestination={requestedDestination}
-        onFinalizeTour={(tour) => {
-          setModalTourData({ type: "custom", ...tour });
-          setIsFinalizeModalOpen(true);
-        }}
-      />
-
+      <TourArchitectStudio destinations={destinations} hotels={hotels} requestedDestinationId={add} />
       <Footer />
-
-      <TourFinalizeModal
-        isOpen={isFinalizeModalOpen}
-        onClose={() => setIsFinalizeModalOpen(false)}
-        tourData={modalTourData}
-      />
     </main>
   );
 }
