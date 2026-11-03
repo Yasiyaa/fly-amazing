@@ -8,7 +8,12 @@ export default async function AdminTours() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-fly-navy-900">Tours</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold text-fly-navy-900">Tours</h1>
+        <Link href="/admin/tours/new" className="btn-primary btn-sm">
+          + Add tour
+        </Link>
+      </div>
       {(data ?? []).length === 0 && (
         <p className="text-sm text-slate-500">
           No tours in the database yet. Run <code>node --env-file=.env.local scripts/seed.mjs</code> to load the catalogue.

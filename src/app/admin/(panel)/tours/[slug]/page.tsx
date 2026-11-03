@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ExternalLink } from "lucide-react";
+import { ArrowLeft, ExternalLink, Trash2 } from "lucide-react";
 import { getSessionClient } from "@/lib/supabase/session";
 import TourEditor from "@/components/admin/TourEditor";
+import { deleteTour } from "@/app/admin/actions";
 
 export default async function AdminTourEdit({ params }: { params: { slug: string } }) {
   if (!/^[a-z0-9-]+$/.test(params.slug)) notFound();
@@ -31,6 +32,23 @@ export default async function AdminTourEdit({ params }: { params: { slug: string
         days={[...(tour.tour_days ?? [])].sort((a: { day: number }, b: { day: number }) => a.day - b.day)}
         destinations={destinations ?? []}
       />
+      <div className="border-t border-slate-200 pt-6">
+        <form action={deleteTour} className="flex justify-end">
+          <input type="hidden" name="slug" value={tour.slug} />
+          <button
+            type="submit"
+            onClick={(e) => {
+              if (!confirm("Are you sure you want to permanently delete this tour?")) {
+                e.preventDefault();
+              }
+            }}
+            className="inline-flex items-center gap-1.5 text-sm font-medium text-red-600 hover:text-red-700 hover:underline"
+          >
+            <Trash2 className="h-4 w-4" />
+            Delete this tour
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

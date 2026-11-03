@@ -14,8 +14,8 @@ export default function NotFound() {
           <Link href="/" className="btn-primary btn-lg">
             Back to home
           </Link>
-          <Link href="/packages" className="btn-secondary btn-lg">
-            Browse packages
+          <Link href="/tours" className="btn-secondary btn-lg">
+            Browse tours
           </Link>
         </div>
       </section>
