@@ -1,10 +1,15 @@
 import { NextResponse } from "next/server";
 import { bookingRequestSchema, firstError } from "@/lib/validation";
 import { BookingError, createBooking } from "@/lib/bookings";
-import { clientIp, rateLimit } from "@/lib/rateLimit";
+import { clientIp, isSameOriginJson, rateLimit } from "@/lib/rateLimit";
 
 export async function POST(request: Request) {
-  if (!rateLimit(`booking:${clientIp(request)}`, 5, 10 * 60_000)) {
+  if (!isSameOriginJson(request)) {
+    return NextResponse.json({ error: "Invalid request." }, { status: 400 });
+  }
+
+  const ip = clientIp(request);
+  if (!rateLimit(`booking:ip:${ip}`, 5, 10 * 60_000)) {
     return NextResponse.json({ error: "Too many requests. Please try again in a few minutes." }, { status: 429 });
   }
 
@@ -18,6 +23,13 @@ export async function POST(request: Request) {
   const parsed = bookingRequestSchema.safeParse(body);
   if (!parsed.success) return NextResponse.json({ error: firstError(parsed.error) }, { status: 400 });
   const input = parsed.data;
+
+  if (!rateLimit(`booking:email:${input.email.toLowerCase()}`, 3, 60 * 60_000)) {
+    return NextResponse.json(
+      { error: "Too many booking requests for this email address. Please check your inbox or wait an hour." },
+      { status: 429 }
+    );
+  }
 
   try {
     const result =

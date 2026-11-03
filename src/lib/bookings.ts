@@ -134,12 +134,13 @@ export async function createBooking(input: BookingInput) {
       reference = newReference();
     }
   } else {
-    console.log(`[bookings] Database not configured. Booking ${reference} for ${input.email} was emailed only.`);
+    console.log(`[bookings] Database not configured. Booking ${reference} was emailed only.`);
   }
 
   await sendBookingEmails({
     reference,
     tourTitle: String(row.tour_title),
+    tourSlug: (row.tour_slug as string | null) ?? null,
     leadName: input.name,
     email: input.email,
     phone: input.phone,

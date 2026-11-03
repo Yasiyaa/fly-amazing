@@ -1,10 +1,14 @@
 import { NextResponse } from "next/server";
 import { firstError, lookupSchema } from "@/lib/validation";
 import { getServiceClient } from "@/lib/supabase/clients";
-import { clientIp, rateLimit } from "@/lib/rateLimit";
+import { clientIp, isSameOriginJson, rateLimit } from "@/lib/rateLimit";
 import { BOOKING_STATUS_LABELS, type BookingStatus } from "@/lib/types";
 
 export async function POST(request: Request) {
+  if (!isSameOriginJson(request)) {
+    return NextResponse.json({ error: "Invalid request." }, { status: 400 });
+  }
+
   if (!rateLimit(`lookup:${clientIp(request)}`, 10, 10 * 60_000)) {
     return NextResponse.json({ error: "Too many attempts. Please try again later." }, { status: 429 });
   }

@@ -148,12 +148,13 @@ export default function PlannerChat({ initialPrompt, compact = false }: { initia
     [busy, messages, sessionId]
   );
 
+  // A ?q= link pre-fills the box; the visitor chooses to send it.
   useEffect(() => {
     if (ready && initialPrompt && !sentInitial.current) {
       sentInitial.current = true;
-      void send(initialPrompt);
+      setInput(initialPrompt);
     }
-  }, [ready, initialPrompt, send]);
+  }, [ready, initialPrompt]);
 
   const reset = () => {
     setMessages([]);
@@ -369,8 +370,11 @@ function RichText({ text }: { text: string }) {
   return <>{blocks}</>;
 }
 
+/** Only links to our own pages, e.g. /tours/grand-tour-of-sri-lanka. Rejects //host and /\host. */
+const INTERNAL_PATH = /^\/(?:tours|book|destinations|tour-architect|contact|plan|booking)(?:\/[a-z0-9-]+)?(?:\?[\w=&%-]*)?$/;
+
 function inline(text: string): React.ReactNode[] {
-  const parts = text.split(/(\*\*[^*]+\*\*|\[[^\]]+\]\([^)]+\)|\/(?:tours|book|destinations|tour-architect|contact|plan)(?:\/[\w\-?=&%]*)?)/g);
+  const parts = text.split(/(\*\*[^*]+\*\*|\[[^\]]+\]\([^)]+\)|(?<![\w/])\/(?:tours|book|destinations|tour-architect|contact|plan|booking)(?:\/[a-z0-9-]+)?(?:\?[\w=&%-]*)?)/g);
   return parts.map((part, i) => {
     if (!part) return null;
     const bold = part.match(/^\*\*([^*]+)\*\*$/);
@@ -378,7 +382,7 @@ function inline(text: string): React.ReactNode[] {
     const md = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
     if (md) {
       const href = md[2];
-      return href.startsWith("/") ? (
+      return INTERNAL_PATH.test(href) ? (
         <Link key={i} href={href} className="font-semibold text-fly-cyan-700 underline underline-offset-2">
           {md[1]}
         </Link>
@@ -386,7 +390,7 @@ function inline(text: string): React.ReactNode[] {
         <span key={i}>{md[1]}</span>
       );
     }
-    if (part.startsWith("/")) {
+    if (INTERNAL_PATH.test(part)) {
       return (
         <Link key={i} href={part} className="font-semibold text-fly-cyan-700 underline underline-offset-2">
           {part}

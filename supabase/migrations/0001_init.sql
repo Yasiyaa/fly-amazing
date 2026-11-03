@@ -220,22 +220,66 @@ create table public.chat_messages (
 );
 create index chat_messages_session_idx on public.chat_messages (session_id, id);
 
--- Atomically counts one planner turn and its token usage (called by the server with the service role).
-create or replace function public.record_chat_turn(p_session uuid, p_input bigint, p_output bigint)
+-- Planner spend controls (called by the server with the service role only).
+-- reserve_chat_turn counts a turn *before* the model is called, under a per-visitor lock, so
+-- parallel requests can't slip past the daily cap. It returns false when the cap is reached or the
+-- session doesn't belong to this visitor.
+create or replace function public.reserve_chat_turn(p_session uuid, p_ip_hash text, p_daily_limit int)
+returns boolean
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  used int;
+begin
+  perform pg_advisory_xact_lock(hashtext(p_ip_hash));
+  select coalesce(sum(message_count), 0) into used
+    from public.chat_sessions
+   where ip_hash = p_ip_hash and last_at > now() - interval '24 hours';
+  if used >= p_daily_limit then
+    return false;
+  end if;
+  update public.chat_sessions
+     set message_count = message_count + 1, last_at = now()
+   where id = p_session and ip_hash = p_ip_hash;
+  return found;
+end;
+$$;
+
+-- Adds a finished turn's token usage.
+create or replace function public.record_chat_tokens(p_session uuid, p_input bigint, p_output bigint)
 returns void
 language sql
 security definer
 set search_path = public
 as $$
   update public.chat_sessions
-     set message_count = message_count + 1,
-         input_tokens = input_tokens + coalesce(p_input, 0),
+     set input_tokens = input_tokens + coalesce(p_input, 0),
          output_tokens = output_tokens + coalesce(p_output, 0),
          last_at = now()
    where id = p_session;
 $$;
-revoke all on function public.record_chat_turn(uuid, bigint, bigint) from public, anon, authenticated;
-grant execute on function public.record_chat_turn(uuid, bigint, bigint) to service_role;
+
+-- Total planner tokens across all visitors in the last 24 hours (global circuit breaker).
+create or replace function public.planner_tokens_last_day()
+returns bigint
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select coalesce(sum(input_tokens + output_tokens), 0)::bigint
+    from public.chat_sessions
+   where last_at > now() - interval '24 hours';
+$$;
+
+revoke all on function public.reserve_chat_turn(uuid, text, int) from public, anon, authenticated;
+revoke all on function public.record_chat_tokens(uuid, bigint, bigint) from public, anon, authenticated;
+revoke all on function public.planner_tokens_last_day() from public, anon, authenticated;
+grant execute on function public.reserve_chat_turn(uuid, text, int) to service_role;
+grant execute on function public.record_chat_tokens(uuid, bigint, bigint) to service_role;
+grant execute on function public.planner_tokens_last_day() to service_role;
 
 -- updated_at triggers
 create trigger destinations_touch before update on public.destinations for each row execute function public.touch_updated_at();
@@ -279,9 +323,15 @@ create policy tour_days_public_read on public.tour_days for select to anon, auth
 create policy tour_days_staff_write on public.tour_days for all to authenticated using (public.is_staff()) with check (public.is_staff());
 
 create policy availability_public_read on public.availability_blocks for select to anon, authenticated using (true);
+-- Visitors see blocked dates only, never the internal reason notes.
+revoke select on public.availability_blocks from anon;
+grant select (id, tour_slug, starts_on, ends_on) on public.availability_blocks to anon;
 create policy availability_staff_write on public.availability_blocks for all to authenticated using (public.is_staff()) with check (public.is_staff());
 
 create policy media_public_read on public.media_assets for select to anon, authenticated using (true);
+-- Don't expose which staff account uploaded each file.
+revoke select on public.media_assets from anon;
+grant select (id, kind, url, alt, tags, created_at) on public.media_assets to anon;
 create policy media_staff_write on public.media_assets for all to authenticated using (public.is_staff()) with check (public.is_staff());
 
 create policy settings_public_read on public.site_settings for select to anon, authenticated using (true);

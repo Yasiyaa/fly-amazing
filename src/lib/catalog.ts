@@ -9,7 +9,8 @@ import type { Destination, Hotel, SiteSettings, Tour, TourDay, TourTheme, HotelT
 
 // Catalogue access. Reads published rows from Supabase when it is configured; otherwise (local
 // dev, preview builds, or a database error) falls back to the bundled seed data so the public site
-// always renders.
+// always renders. An empty result is respected (e.g. staff unpublished everything): once the
+// database is configured, seed it with scripts/seed.mjs.
 
 type Row = Record<string, any>;
 
@@ -107,7 +108,7 @@ export const getTours = cache(async (): Promise<Tour[]> => {
     async () => {
       const { data, error } = await db.from("tours").select("*, tour_days(*)").eq("published", true).order("sort_order");
       if (error) throw error;
-      return data && data.length > 0 ? data.map(mapTour) : null;
+      return (data ?? []).map(mapTour);
     },
     seed
   );
@@ -127,7 +128,7 @@ export const getDestinations = cache(async (): Promise<Destination[]> => {
     async () => {
       const { data, error } = await db.from("destinations").select("*").eq("published", true).order("sort_order");
       if (error) throw error;
-      return data && data.length > 0 ? data.map(mapDestination) : null;
+      return (data ?? []).map(mapDestination);
     },
     seed
   );
@@ -141,7 +142,7 @@ export const getHotels = cache(async (): Promise<Hotel[]> => {
     async () => {
       const { data, error } = await db.from("hotels").select("*").eq("published", true).order("sort_order");
       if (error) throw error;
-      return data && data.length > 0 ? data.map(mapHotel) : null;
+      return (data ?? []).map(mapHotel);
     },
     HOTELS
   );

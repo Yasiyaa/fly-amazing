@@ -250,10 +250,10 @@ export async function runPlannerTool(name: string, rawInput: unknown): Promise<T
       const p = checkDatesInput.safeParse(rawInput);
       if (!p.success) return err("Invalid input for check_dates.");
       const month = p.data.month ?? (p.data.start_date ? Number(p.data.start_date.slice(5, 7)) : undefined);
-      let blocked: { starts_on: string; ends_on: string; reason: string; tour_slug: string | null }[] = [];
+      let blocked: { starts_on: string; ends_on: string; tour_slug: string | null }[] = [];
       const db = getPublicClient();
       if (db) {
-        const { data } = await db.from("availability_blocks").select("starts_on, ends_on, reason, tour_slug").gte("ends_on", new Date().toISOString().slice(0, 10));
+        const { data } = await db.from("availability_blocks").select("starts_on, ends_on, tour_slug").gte("ends_on", new Date().toISOString().slice(0, 10));
         blocked = (data ?? []).filter((b) => !p.data.tour_slug || !b.tour_slug || b.tour_slug === p.data.tour_slug);
       }
       const today = new Date().toISOString().slice(0, 10);

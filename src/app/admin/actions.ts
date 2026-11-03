@@ -1,11 +1,13 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { getSessionClient, getStaffUser } from "@/lib/supabase/session";
 import { sendStatusEmail } from "@/lib/emailService";
 import { BOOKING_STATUS_LABELS, type BookingStatus } from "@/lib/types";
+import { rateLimit } from "@/lib/rateLimit";
 
 // Every action re-checks that the caller is signed-in staff. Row-level security on the session
 // client is a second layer: a non-staff session can't read or write these tables anyway.
@@ -24,6 +26,31 @@ function fail(error: unknown): ActionState {
   return { error: error instanceof Error ? error.message : "Something went wrong." };
 }
 
+/**
+ * Media links saved from admin must be our own files (`/images/...`, `/videos/...`) or https URLs
+ * on hosts the site can serve. Anything else would break pages (next/image rejects unknown hosts)
+ * or smuggle in javascript:/data: URLs.
+ */
+const MEDIA_HOSTS = new Set(["images.unsplash.com", "plus.unsplash.com", "images.pexels.com", "assets.mixkit.co"]);
+function supabaseHost() {
+  try {
+    return new URL(process.env.NEXT_PUBLIC_SUPABASE_URL ?? "").host;
+  } catch {
+    return "";
+  }
+}
+function isAllowedMediaUrl(value: string) {
+  if (/^\/(?![/\\])[\w\-./]+$/.test(value) && !value.includes("..")) return true;
+  try {
+    const u = new URL(value);
+    return u.protocol === "https:" && (MEDIA_HOSTS.has(u.host) || (u.host === supabaseHost() && u.pathname.startsWith("/storage/v1/object/public/media/")));
+  } catch {
+    return false;
+  }
+}
+const mediaUrl = (label: string) =>
+  z.string().trim().max(1000).refine((v) => v === "" || isAllowedMediaUrl(v), `${label} must be a Media library link or an Unsplash/Pexels/Mixkit https link.`);
+
 /** Public pages read the catalogue with a 5-minute cache; refresh them after edits. */
 function refreshSite() {
   revalidatePath("/", "layout");
@@ -34,8 +61,13 @@ function refreshSite() {
 export async function signIn(_: ActionState, formData: FormData): Promise<ActionState> {
   const db = getSessionClient();
   if (!db) return { error: "The database isn't configured yet." };
-  const email = String(formData.get("email") ?? "").trim();
-  const password = String(formData.get("password") ?? "");
+  const email = String(formData.get("email") ?? "").trim().toLowerCase().slice(0, 254);
+  const password = String(formData.get("password") ?? "").slice(0, 200);
+  // Sign-in runs on the server, so Supabase only sees our server's IP: throttle here per visitor and per account.
+  const ip = headers().get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  if (!rateLimit(`signin-ip:${ip}`, 10, 15 * 60_000) || !rateLimit(`signin-email:${email}`, 5, 15 * 60_000)) {
+    return { error: "Too many sign-in attempts. Please wait 15 minutes and try again." };
+  }
   const { error } = await db.auth.signInWithPassword({ email, password });
   if (error) return { error: "Email or password is incorrect." };
   const staff = await getStaffUser();
@@ -135,9 +167,9 @@ export async function saveTour(_: ActionState, formData: FormData): Promise<Acti
       price_comfort_usd: int("priceComfort"),
       price_superior_usd: int("priceSuperior"),
       price_luxury_usd: int("priceLuxury"),
-      hero_image: z.string().max(1000).parse(formData.get("heroImage") ?? ""),
-      gallery: lines(formData.get("gallery")),
-      video: String(formData.get("video") ?? "").trim() || null,
+      hero_image: mediaUrl("Main photo").parse(formData.get("heroImage") ?? ""),
+      gallery: z.array(mediaUrl("Gallery link")).max(30).parse(lines(formData.get("gallery"))),
+      video: mediaUrl("Video").parse(formData.get("video") ?? "") || null,
       highlights: lines(formData.get("highlights")),
       inclusions: lines(formData.get("inclusions")),
       exclusions: lines(formData.get("exclusions")),
@@ -165,7 +197,7 @@ export async function saveTour(_: ActionState, formData: FormData): Promise<Acti
 
 const mediaSchema = z.object({
   kind: z.enum(["image", "video"]),
-  storagePath: z.string().max(400),
+  storagePath: z.string().regex(/^(images|videos)\/[a-z0-9][a-z0-9.-]{0,120}$/),
   url: z.string().url().max(1000),
   alt: z.string().max(300).default(""),
   tags: z.array(z.string().max(40)).max(20).default([]),
@@ -176,8 +208,9 @@ export async function recordMedia(input: z.input<typeof mediaSchema>): Promise<A
   try {
     const { db, staff } = await requireStaff();
     const m = mediaSchema.parse(input);
-    const base = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
-    if (!m.url.startsWith(`${base}/storage/v1/object/public/media/`)) throw new Error("Unexpected media URL.");
+    const { data: pub } = db.storage.from("media").getPublicUrl(m.storagePath);
+    if (m.url !== pub.publicUrl) throw new Error("Unexpected media URL.");
+    if ((m.kind === "video") !== m.storagePath.startsWith("videos/")) throw new Error("Unexpected media type.");
     const { error } = await db.from("media_assets").insert({
       kind: m.kind,
       storage_path: m.storagePath,
@@ -209,7 +242,10 @@ export async function deleteMedia(formData: FormData) {
   const { db } = await requireStaff();
   const id = z.string().uuid().parse(formData.get("id"));
   const { data } = await db.from("media_assets").select("storage_path").eq("id", id).single();
-  if (data?.storage_path) await db.storage.from("media").remove([data.storage_path]);
+  if (data?.storage_path) {
+    const { error } = await db.storage.from("media").remove([data.storage_path]);
+    if (error) throw new Error(`Couldn't delete the file: ${error.message}`);
+  }
   await db.from("media_assets").delete().eq("id", id);
   revalidatePath("/admin/media");
 }
@@ -227,7 +263,7 @@ export async function saveSettings(_: ActionState, formData: FormData): Promise<
       sltdaLicence: z.string().max(60).parse(formData.get("sltdaLicence") ?? ""),
     };
     const heroVideos = z
-      .array(z.object({ url: z.string().min(1).max(1000), poster: z.string().max(1000), label: z.string().max(120) }))
+      .array(z.object({ url: mediaUrl("Video link"), poster: mediaUrl("Poster image"), label: z.string().max(120) }))
       .max(8)
       .parse(JSON.parse(String(formData.get("heroVideos") ?? "[]")))
       .filter((v) => v.url);

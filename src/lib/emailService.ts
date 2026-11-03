@@ -11,9 +11,13 @@ export function esc(value: unknown): string {
 
 const usd = (n: number) => `US$${Math.round(n).toLocaleString("en-US")}`;
 
+/** Private inbox that receives notifications. Never shown to customers. */
 export function teamInbox() {
-  return process.env.ADMIN_NOTIFICATION_EMAIL || "info@amazingworldtravel.com";
+  return process.env.ADMIN_NOTIFICATION_EMAIL || PUBLIC_EMAIL;
 }
+
+/** Public contact address used in customer-facing emails. */
+const PUBLIC_EMAIL = "info@amazingworldtravel.com";
 
 interface Mail {
   to: string;
@@ -28,7 +32,7 @@ interface Mail {
  */
 export async function sendMail({ to, subject, html, replyTo }: Mail) {
   if (!(process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS)) {
-    console.log(`[email] SMTP not configured. Would send "${subject}" to ${to}`);
+    console.log(`[email] SMTP not configured. Skipped a ${to === teamInbox() ? "team notification" : "traveller email"}.`);
     return { sent: false };
   }
   const transporter = nodemailer.createTransport({
@@ -56,7 +60,7 @@ function layout(title: string, body: string) {
 <h1 style="margin:6px 0 0;font-size:22px">${title}</h1></div>
 <div style="padding:28px;font-size:15px;line-height:1.6">${body}</div>
 <div style="padding:18px 28px;border-top:1px solid #e2e8f0;font-size:12px;color:#64748b">
-${esc(COMPANY.name)} · Unit 94D, 75 Galle Road, Colombo 03, Sri Lanka · ${esc(teamInbox())}</div>
+${esc(COMPANY.name)} · Unit 94D, 75 Galle Road, Colombo 03, Sri Lanka · ${esc(PUBLIC_EMAIL)}</div>
 </div></body></html>`;
 }
 
@@ -72,6 +76,7 @@ function rows(items: [string, string][]) {
 export interface BookingEmailData {
   reference: string;
   tourTitle: string;
+  tourSlug?: string | null;
   leadName: string;
   email: string;
   phone: string;
@@ -88,6 +93,18 @@ export interface BookingEmailData {
 }
 
 export async function sendBookingEmails(b: BookingEmailData) {
+  // If tour is not a verified catalogue tour (custom or planner), do not echo user-supplied free text in the customer auto-reply.
+  const customerTripTitle = b.tourSlug ? b.tourTitle : "Custom Sri Lanka itinerary";
+  const customerSummary = rows([
+    ["Reference", esc(b.reference)],
+    ["Trip", esc(customerTripTitle)],
+    ["Start date", esc(b.startDate ?? "Flexible")],
+    ["Travellers", esc(`${b.adults} adult${b.adults === 1 ? "" : "s"}${b.children ? `, ${b.children} child${b.children === 1 ? "" : "ren"}` : ""}`)],
+    ...(b.tierLabel ? ([["Hotels", esc(b.tierLabel)]] as [string, string][]) : []),
+    ["Estimated total", esc(usd(b.totalUSD))],
+    [b.payInFull ? "Payable in full" : "Deposit to confirm (25%)", esc(usd(b.depositUSD))],
+  ]);
+
   const summary = rows([
     ["Reference", esc(b.reference)],
     ["Trip", esc(b.tourTitle)],
@@ -103,11 +120,12 @@ export async function sendBookingEmails(b: BookingEmailData) {
         .join("")}</ol>`
     : "";
 
+  const safeCustomerGreeting = b.leadName && !/[<>@/\\:]/.test(b.leadName) ? `Hi ${esc(b.leadName)},` : "Hi there,";
   const customer = layout(
     "We've received your booking request",
-    `<p>Hi ${esc(b.leadName)},</p>
+    `<p>${safeCustomerGreeting}</p>
 <p>Thank you for choosing ${esc(COMPANY.name)}. A travel specialist will check availability and reply within one business day with your confirmed price and payment options. No payment is taken until you approve the confirmation.</p>
-${summary}${itinerary}
+${customerSummary}${itinerary}
 <p>You can check the status any time on our website under <strong>Manage booking</strong> using your reference and email.</p>`
   );
 
@@ -128,9 +146,10 @@ ${summary}${itinerary}
 }
 
 export async function sendEnquiryEmails(e: { reference: string; name: string; email: string; phone: string; message: string }) {
+  const safeGreeting = e.name && !/[<>@/\\:]/.test(e.name) ? `Hi ${esc(e.name)},` : "Hi there,";
   const customer = layout(
     "Thanks for getting in touch",
-    `<p>Hi ${esc(e.name)},</p><p>We've received your message (reference <strong>${esc(e.reference)}</strong>) and a Sri Lanka specialist will reply within one business day.</p>`
+    `<p>${safeGreeting}</p><p>We've received your message (reference <strong>${esc(e.reference)}</strong>) and a Sri Lanka specialist will reply within one business day.</p>`
   );
   const team = layout(
     `New enquiry ${esc(e.reference)}`,
@@ -153,5 +172,5 @@ export async function sendStatusEmail(b: { reference: string; email: string; lea
       b.message ? `<p style="padding:12px;background:#f1f5f9;border-radius:8px;white-space:pre-wrap">${esc(b.message)}</p>` : ""
     }<p>Reply to this email if you have any questions.</p>`
   );
-  await sendMail({ to: b.email, subject: `Booking ${b.reference} · ${b.statusLabel}`, html, replyTo: teamInbox() });
+  await sendMail({ to: b.email, subject: `Booking ${b.reference} · ${b.statusLabel}`, html, replyTo: PUBLIC_EMAIL });
 }
