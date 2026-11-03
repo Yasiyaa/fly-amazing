@@ -1,202 +1,176 @@
+import "server-only";
 import nodemailer from "nodemailer";
-
-export interface TourInquiryData {
-  inquiryId: string;
-  fullName: string;
-  email: string;
-  phone: string;
-  departureCity: string;
-  travelDates: {
-    startDate: string;
-    endDate?: string;
-  };
-  travelers: {
-    adults: number;
-    children: number;
-  };
-  tourType: "custom" | "package" | "flight" | "general";
-  packageName?: string;
-  estimatedBudgetAUD: number;
-  itinerary: Array<{
-    destinationId: string;
-    destinationName: string;
-    nights: number;
-    hotelId?: string;
-    hotelName?: string;
-    roomType?: string;
-    pricePerNightAUD?: number;
-  }>;
-  specialRequests?: string;
-}
+import { COMPANY } from "./site";
 
 const HTML_ESCAPES: Record<string, string> = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" };
 
-/** Escape user-supplied text before it is placed in the email HTML. */
-function esc(value: unknown): string {
+/** Escape user-supplied text before it is placed in email HTML. */
+export function esc(value: unknown): string {
   return String(value ?? "").replace(/[&<>"']/g, (c) => HTML_ESCAPES[c]);
 }
 
-const TOUR_TYPE_LABELS: Record<TourInquiryData["tourType"], string> = {
-  custom: "Bespoke custom journey (Tour Architect)",
-  package: "Curated package",
-  flight: "Flights only",
-  general: "General enquiry",
-};
+const usd = (n: number) => `US$${Math.round(n).toLocaleString("en-US")}`;
 
-export async function sendTourInquiryEmail(data: TourInquiryData) {
-  const adminEmail = process.env.ADMIN_NOTIFICATION_EMAIL || "yasithvidusara@gmail.com";
-  
-  // Create HTML body for Admin
-  const itineraryHtml = data.itinerary
-    .map(
-      (item, idx) => `
-      <tr style="border-bottom: 1px solid #e2e8f0;">
-        <td style="padding: 12px 16px; font-weight: 600; color: #033f7e;">Stop ${idx + 1}: ${esc(item.destinationName)}</td>
-        <td style="padding: 12px 16px; color: #475569;">${item.nights} Night${item.nights > 1 ? "s" : ""}</td>
-        <td style="padding: 12px 16px; color: #01a4a9; font-weight: 500;">${esc(item.hotelName || "Standard Boutique Stay")} (${esc(item.roomType || "Standard Suite")})</td>
-        <td style="padding: 12px 16px; color: #e66017; font-weight: 600; text-align: right;">${item.pricePerNightAUD ? `$${item.pricePerNightAUD * item.nights} AUD` : "Included"}</td>
-      </tr>
-    `
-    )
-    .join("");
+/** Private inbox that receives notifications. Never shown to customers. */
+export function teamInbox() {
+  return process.env.ADMIN_NOTIFICATION_EMAIL || PUBLIC_EMAIL;
+}
 
-  const emailHtml = `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <meta charset="utf-8">
-      <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #1e293b; background-color: #f8fafc; margin: 0; padding: 20px; }
-        .card { background: #ffffff; max-width: 680px; margin: 0 auto; border-radius: 16px; overflow: hidden; border: 1px solid #e2e8f0; box-shadow: 0 10px 25px -5px rgba(3, 63, 126, 0.1); }
-        .header { background: linear-gradient(135deg, #033f7e 0%, #01a4a9 100%); padding: 32px 24px; text-align: center; color: #ffffff; }
-        .header h1 { margin: 0 0 6px 0; font-size: 24px; letter-spacing: -0.5px; }
-        .header p { margin: 0; color: #e0f7f8; font-size: 14px; }
-        .badge { display: inline-block; background: #e66017; color: #ffffff; padding: 4px 12px; border-radius: 9999px; font-size: 12px; font-weight: 700; text-transform: uppercase; margin-top: 12px; }
-        .content { padding: 32px 24px; }
-        .section-title { font-size: 16px; font-weight: 700; color: #033f7e; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #01a4a9; padding-bottom: 6px; margin: 24px 0 16px 0; }
-        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
-        .info-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 16px; }
-        .info-label { font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 600; margin-bottom: 4px; }
-        .info-value { font-size: 15px; font-weight: 600; color: #0f172a; }
-        table { width: 100%; border-collapse: collapse; margin-top: 8px; }
-        th { background: #f1f5f9; text-align: left; padding: 10px 16px; font-size: 12px; font-weight: 600; color: #475569; }
-        .total-box { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 12px; padding: 16px; margin-top: 24px; display: flex; justify-content: space-between; align-items: center; }
-        .footer { background: #f8fafc; border-top: 1px solid #e2e8f0; padding: 20px 24px; text-align: center; font-size: 12px; color: #94a3b8; }
-      </style>
-    </head>
-    <body>
-      <div class="card">
-        <div class="header">
-          <h1>✈️ New Sri Lanka Tour Dossier</h1>
-          <p>Fly Amazing — Australia to Sri Lanka Travel System</p>
-          <div class="badge">Reference: ${esc(data.inquiryId)}</div>
-        </div>
-        
-        <div class="content">
-          <div class="section-title">Client Details</div>
-          <div class="info-grid">
-            <div class="info-box">
-              <div class="info-label">Full Name</div>
-              <div class="info-value">${esc(data.fullName)}</div>
-            </div>
-            <div class="info-box">
-              <div class="info-label">Contact Email</div>
-              <div class="info-value"><a href="mailto:${esc(data.email)}" style="color: #033f7e;">${esc(data.email)}</a></div>
-            </div>
-            <div class="info-box">
-              <div class="info-label">Australian Phone</div>
-              <div class="info-value"><a href="tel:${esc(data.phone)}" style="color: #033f7e;">${esc(data.phone)}</a></div>
-            </div>
-            <div class="info-box">
-              <div class="info-label">Departure Airport</div>
-              <div class="info-value">${esc(data.departureCity)} &rarr; Colombo (CMB)</div>
-            </div>
-            <div class="info-box">
-              <div class="info-label">Travel Window</div>
-              <div class="info-value">${esc(data.travelDates.startDate)} ${data.travelDates.endDate ? `to ${esc(data.travelDates.endDate)}` : ""}</div>
-            </div>
-            <div class="info-box">
-              <div class="info-label">Party Size</div>
-              <div class="info-value">${data.travelers.adults} Adult${data.travelers.adults > 1 ? "s" : ""} ${data.travelers.children > 0 ? `, ${data.travelers.children} Children` : ""}</div>
-            </div>
-          </div>
+/** Public contact address used in customer-facing emails. */
+const PUBLIC_EMAIL = "info@amazingworldtravel.com";
 
-          <div class="section-title">Tour Selection & Itinerary</div>
-          <p style="margin: 0 0 12px 0; font-size: 14px; color: #475569;">
-            <strong>Type:</strong> ${esc(TOUR_TYPE_LABELS[data.tourType])}${data.packageName ? `: ${esc(data.packageName)}` : ""}
-          </p>
+interface Mail {
+  to: string;
+  subject: string;
+  html: string;
+  replyTo?: string;
+}
 
-          <table>
-            <thead>
-              <tr>
-                <th>Destination / Stop</th>
-                <th>Duration</th>
-                <th>Selected Accommodation</th>
-                <th style="text-align: right;">Est. Subtotal</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${itineraryHtml}
-            </tbody>
-          </table>
-
-          <div class="total-box">
-            <span style="font-weight: 600; color: #033f7e; font-size: 15px;">Estimated Total Trip Valuation:</span>
-            <span style="font-size: 22px; font-weight: 800; color: #e66017;">$${data.estimatedBudgetAUD.toLocaleString()} AUD</span>
-          </div>
-
-          ${
-            data.specialRequests
-              ? `
-            <div class="section-title">Client Notes / Special Requests</div>
-            <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 14px; font-size: 14px; color: #92400e;">
-              ${esc(data.specialRequests)}
-            </div>
-          `
-              : ""
-          }
-        </div>
-
-        <div class="footer">
-          <p style="margin: 0 0 4px 0;">Fly Amazing Australia &bull; Registered Travel Concierge</p>
-          <p style="margin: 0;">Automated lead delivery to ${adminEmail}</p>
-        </div>
-      </div>
-    </body>
-    </html>
-  `;
-
-  // Check if SMTP is configured, else log to console for development
-  if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS) {
-    const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: Number(process.env.SMTP_PORT) || 587,
-      secure: process.env.SMTP_SECURE === "true",
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-      },
-    });
-
-    await transporter.sendMail({
-      from: `"Fly Amazing Bookings" <${process.env.SMTP_FROM || process.env.SMTP_USER}>`,
-      to: adminEmail,
-      replyTo: data.email,
-      subject: `[New enquiry ${data.inquiryId}] ${data.fullName} - ${data.departureCity} to Sri Lanka`,
-      html: emailHtml,
-    });
-  } else {
-    // Development / fallback logging
-    console.log("=================================================");
-    console.log(`[EMAIL DISPATCH SIMULATION] Sent to: ${adminEmail}`);
-    console.log(`Reference: ${data.inquiryId} for ${data.fullName}`);
-    console.log(`Estimated Total: $${data.estimatedBudgetAUD} AUD`);
-    console.log("=================================================");
+/**
+ * Sends via SMTP when SMTP_HOST, SMTP_USER and SMTP_PASS are all set. Otherwise logs a short
+ * summary and returns, so bookings and enquiries never fail just because email isn't configured.
+ */
+export async function sendMail({ to, subject, html, replyTo }: Mail) {
+  if (!(process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS)) {
+    console.log(`[email] SMTP not configured. Skipped a ${to === teamInbox() ? "team notification" : "traveller email"}.`);
+    return { sent: false };
   }
+  const transporter = nodemailer.createTransport({
+    host: process.env.SMTP_HOST,
+    port: Number(process.env.SMTP_PORT) || 587,
+    secure: process.env.SMTP_SECURE === "true",
+    auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
+  });
+  await transporter.sendMail({
+    from: `"${COMPANY.name}" <${process.env.SMTP_FROM || process.env.SMTP_USER}>`,
+    to,
+    replyTo,
+    subject,
+    html,
+  });
+  return { sent: true };
+}
 
-  return {
-    success: true,
-    inquiryId: data.inquiryId,
-    dispatchedTo: adminEmail,
-  };
+function layout(title: string, body: string) {
+  return `<!doctype html><html><head><meta charset="utf-8"></head>
+<body style="margin:0;padding:24px;background:#f8fafc;font-family:-apple-system,Segoe UI,Roboto,sans-serif;color:#1e293b">
+<div style="max-width:620px;margin:0 auto;background:#fff;border:1px solid #e2e8f0;border-radius:16px;overflow:hidden">
+<div style="background:#011a37;padding:24px 28px;color:#fff">
+<div style="font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#a3e4e6">${esc(COMPANY.name)}</div>
+<h1 style="margin:6px 0 0;font-size:22px">${title}</h1></div>
+<div style="padding:28px;font-size:15px;line-height:1.6">${body}</div>
+<div style="padding:18px 28px;border-top:1px solid #e2e8f0;font-size:12px;color:#64748b">
+${esc(COMPANY.name)} · Unit 94D, 75 Galle Road, Colombo 03, Sri Lanka · ${esc(PUBLIC_EMAIL)}</div>
+</div></body></html>`;
+}
+
+function rows(items: [string, string][]) {
+  return `<table style="width:100%;border-collapse:collapse;margin:16px 0">${items
+    .map(
+      ([k, v]) =>
+        `<tr><td style="padding:8px 0;color:#64748b;width:40%;vertical-align:top">${esc(k)}</td><td style="padding:8px 0;font-weight:600">${v}</td></tr>`
+    )
+    .join("")}</table>`;
+}
+
+export interface BookingEmailData {
+  reference: string;
+  tourTitle: string;
+  tourSlug?: string | null;
+  leadName: string;
+  email: string;
+  phone: string;
+  country: string;
+  startDate: string | null;
+  adults: number;
+  children: number;
+  tierLabel: string | null;
+  totalUSD: number;
+  depositUSD: number;
+  payInFull: boolean;
+  notes: string;
+  itineraryLines: string[];
+}
+
+export async function sendBookingEmails(b: BookingEmailData) {
+  // If tour is not a verified catalogue tour (custom or planner), do not echo user-supplied free text in the customer auto-reply.
+  const customerTripTitle = b.tourSlug ? b.tourTitle : "Custom Sri Lanka itinerary";
+  const customerSummary = rows([
+    ["Reference", esc(b.reference)],
+    ["Trip", esc(customerTripTitle)],
+    ["Start date", esc(b.startDate ?? "Flexible")],
+    ["Travellers", esc(`${b.adults} adult${b.adults === 1 ? "" : "s"}${b.children ? `, ${b.children} child${b.children === 1 ? "" : "ren"}` : ""}`)],
+    ...(b.tierLabel ? ([["Hotels", esc(b.tierLabel)]] as [string, string][]) : []),
+    ["Estimated total", esc(usd(b.totalUSD))],
+    [b.payInFull ? "Payable in full" : "Deposit to confirm (25%)", esc(usd(b.depositUSD))],
+  ]);
+
+  const summary = rows([
+    ["Reference", esc(b.reference)],
+    ["Trip", esc(b.tourTitle)],
+    ["Start date", esc(b.startDate ?? "Flexible")],
+    ["Travellers", esc(`${b.adults} adult${b.adults === 1 ? "" : "s"}${b.children ? `, ${b.children} child${b.children === 1 ? "" : "ren"}` : ""}`)],
+    ...(b.tierLabel ? ([["Hotels", esc(b.tierLabel)]] as [string, string][]) : []),
+    ["Estimated total", esc(usd(b.totalUSD))],
+    [b.payInFull ? "Payable in full" : "Deposit to confirm (25%)", esc(usd(b.depositUSD))],
+  ]);
+  const itinerary = b.itineraryLines.length
+    ? `<p style="margin:16px 0 4px;font-weight:600">Itinerary</p><ol style="margin:0;padding-left:18px">${b.itineraryLines
+        .map((l) => `<li>${esc(l)}</li>`)
+        .join("")}</ol>`
+    : "";
+
+  const safeCustomerGreeting = b.leadName && !/[<>@/\\:]/.test(b.leadName) ? `Hi ${esc(b.leadName)},` : "Hi there,";
+  const customer = layout(
+    "We've received your booking request",
+    `<p>${safeCustomerGreeting}</p>
+<p>Thank you for choosing ${esc(COMPANY.name)}. A travel specialist will check availability and reply within one business day with your confirmed price and payment options. No payment is taken until you approve the confirmation.</p>
+${customerSummary}${itinerary}
+<p>You can check the status any time on our website under <strong>Manage booking</strong> using your reference and email.</p>`
+  );
+
+  const team = layout(
+    `New booking request ${esc(b.reference)}`,
+    `${rows([
+      ["Name", esc(b.leadName)],
+      ["Email", `<a href="mailto:${esc(b.email)}">${esc(b.email)}</a>`],
+      ["Phone", esc(b.phone)],
+      ["Country", esc(b.country || "—")],
+    ])}${summary}${itinerary}${b.notes ? `<p style="margin-top:16px;padding:12px;background:#fffbeb;border-radius:8px">${esc(b.notes)}</p>` : ""}`
+  );
+
+  await Promise.all([
+    sendMail({ to: b.email, subject: `Your booking request ${b.reference} · ${COMPANY.name}`, html: customer }),
+    sendMail({ to: teamInbox(), subject: `[Booking ${b.reference}] ${b.leadName} · ${b.tourTitle}`, html: team, replyTo: b.email }),
+  ]);
+}
+
+export async function sendEnquiryEmails(e: { reference: string; name: string; email: string; phone: string; message: string }) {
+  const safeGreeting = e.name && !/[<>@/\\:]/.test(e.name) ? `Hi ${esc(e.name)},` : "Hi there,";
+  const customer = layout(
+    "Thanks for getting in touch",
+    `<p>${safeGreeting}</p><p>We've received your message (reference <strong>${esc(e.reference)}</strong>) and a Sri Lanka specialist will reply within one business day.</p>`
+  );
+  const team = layout(
+    `New enquiry ${esc(e.reference)}`,
+    `${rows([
+      ["Name", esc(e.name)],
+      ["Email", `<a href="mailto:${esc(e.email)}">${esc(e.email)}</a>`],
+      ["Phone", esc(e.phone || "—")],
+    ])}<p style="padding:12px;background:#f1f5f9;border-radius:8px;white-space:pre-wrap">${esc(e.message)}</p>`
+  );
+  await Promise.all([
+    sendMail({ to: e.email, subject: `We've received your message · ${COMPANY.name}`, html: customer }),
+    sendMail({ to: teamInbox(), subject: `[Enquiry ${e.reference}] ${e.name}`, html: team, replyTo: e.email }),
+  ]);
+}
+
+export async function sendStatusEmail(b: { reference: string; email: string; leadName: string; tourTitle: string; statusLabel: string; message?: string }) {
+  const html = layout(
+    `Booking ${esc(b.reference)}: ${esc(b.statusLabel)}`,
+    `<p>Hi ${esc(b.leadName)},</p><p>The status of your booking for <strong>${esc(b.tourTitle)}</strong> is now <strong>${esc(b.statusLabel)}</strong>.</p>${
+      b.message ? `<p style="padding:12px;background:#f1f5f9;border-radius:8px;white-space:pre-wrap">${esc(b.message)}</p>` : ""
+    }<p>Reply to this email if you have any questions.</p>`
+  );
+  await sendMail({ to: b.email, subject: `Booking ${b.reference} · ${b.statusLabel}`, html, replyTo: PUBLIC_EMAIL });
 }

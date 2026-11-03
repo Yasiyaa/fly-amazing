@@ -23,9 +23,9 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# local env files
-.env*.local
-.env
+# env files (keep the template)
+.env*
+!.env.example
 
 # vercel
 .vercel
@@ -33,3 +33,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# graft's local graph cache — regenerable, not committed (run `graft build`).
+/graft/

@@ -1,21 +1,20 @@
 "use client";
 
 import React, { useCallback, useEffect, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Phone, Menu, X, ArrowRight } from "lucide-react";
+import { Menu, X, ArrowRight, Sparkles, Phone } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useOverlay } from "@/lib/useOverlay";
-
-export const PHONE_DISPLAY = "1300 359 269";
-export const PHONE_HREF = "tel:1300359269";
+import Logo from "./Logo";
+import { CurrencySelect } from "@/components/currency/CurrencyProvider";
+import { useSiteSettings } from "./SiteSettingsProvider";
 
 const NAV_LINKS = [
-  { name: "Flights", href: "/flights" },
-  { name: "Packages", href: "/packages" },
-  { name: "Tour Architect", href: "/tour-architect" },
+  { name: "Tours", href: "/tours" },
   { name: "Destinations", href: "/destinations" },
+  { name: "Build your trip", href: "/tour-architect" },
+  { name: "AI planner", href: "/plan" },
   { name: "Contact", href: "/contact" },
 ];
 
@@ -23,6 +22,7 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();
+  const settings = useSiteSettings();
 
   const closeMenu = useCallback(() => setMobileMenuOpen(false), []);
   useOverlay(mobileMenuOpen, closeMenu);
@@ -51,8 +51,8 @@ export default function Navbar() {
         )}
       >
         <nav className="container-page flex h-[72px] items-center justify-between gap-6" aria-label="Main">
-          <Link href="/" className="relative block h-9 w-[125px] shrink-0 sm:h-10 sm:w-[139px]" aria-label="Fly Amazing home">
-            <Image src="/logo.png" alt="Fly Amazing" fill priority sizes="140px" className="object-contain object-left" />
+          <Link href="/" className="shrink-0" aria-label="Amazing World Travel home">
+            <Logo />
           </Link>
 
           <ul className="hidden items-center gap-1 lg:flex">
@@ -62,31 +62,22 @@ export default function Navbar() {
                   href={link.href}
                   aria-current={isActive(link.href) ? "page" : undefined}
                   className={cn(
-                    "relative rounded-full px-4 py-2 text-[14px] font-medium transition-colors",
-                    isActive(link.href)
-                      ? "text-fly-navy"
-                      : "text-slate-600 hover:bg-slate-100/80 hover:text-fly-navy"
+                    "relative inline-flex items-center gap-1.5 rounded-full px-3.5 py-2 text-[14px] font-medium transition-colors xl:px-4",
+                    isActive(link.href) ? "text-fly-navy" : "text-slate-600 hover:bg-slate-100/80 hover:text-fly-navy"
                   )}
                 >
+                  {link.href === "/plan" && <Sparkles className="h-3.5 w-3.5 text-fly-orange" />}
                   {link.name}
-                  {isActive(link.href) && (
-                    <span className="absolute inset-x-4 -bottom-[3px] h-[2px] rounded-full bg-fly-orange" />
-                  )}
+                  {isActive(link.href) && <span className="absolute inset-x-4 -bottom-[3px] h-[2px] rounded-full bg-fly-orange" />}
                 </Link>
               </li>
             ))}
           </ul>
 
           <div className="flex items-center gap-2">
-            <a
-              href={PHONE_HREF}
-              className="hidden items-center gap-2 rounded-full px-3 py-2 text-[13px] font-semibold text-fly-navy transition-colors hover:bg-slate-100 xl:inline-flex"
-            >
-              <Phone className="h-4 w-4 text-fly-orange" />
-              {PHONE_DISPLAY}
-            </a>
-            <Link href="/tour-architect" className="btn-primary btn-sm hidden sm:inline-flex">
-              Plan my trip
+            <CurrencySelect className="hidden sm:block" />
+            <Link href="/tours" className="btn-primary btn-sm hidden md:inline-flex">
+              Book a tour
               <ArrowRight className="h-4 w-4" />
             </Link>
             <button
@@ -133,14 +124,19 @@ export default function Navbar() {
           </ul>
 
           <div className="mt-auto space-y-3 pt-8">
-            <Link href="/tour-architect" onClick={closeMenu} className="btn-primary btn-lg w-full">
-              Plan my trip
+            <div className="flex items-center justify-between rounded-2xl border border-slate-200 px-4 py-3">
+              <span className="text-sm text-slate-600">Show prices in</span>
+              <CurrencySelect />
+            </div>
+            <Link href="/tours" onClick={closeMenu} className="btn-primary btn-lg w-full">
+              Book a tour
             </Link>
-            <a href={PHONE_HREF} className="btn-secondary btn-lg w-full">
-              <Phone className="h-4 w-4 text-fly-orange" />
-              Call {PHONE_DISPLAY}
-            </a>
-            <p className="pt-2 text-center text-xs text-slate-400">Mon–Sat, 8:30am–7:30pm AEST</p>
+            {settings.phone && (
+              <a href={`tel:${settings.phone.replace(/[^\d+]/g, "")}`} className="btn-secondary btn-lg w-full">
+                <Phone className="h-4 w-4 text-fly-orange" />
+                Call {settings.phone}
+              </a>
+            )}
           </div>
         </div>
       </div>
