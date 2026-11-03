@@ -325,9 +325,17 @@ function ItineraryCard({ itinerary, onRequest }: { itinerary: Itinerary; onReque
             <Price usd={itinerary.estimate.perPersonUSD} />
           </p>
         </div>
-        <button type="button" onClick={onRequest} className="btn-primary btn-sm">
-          Request to book
-        </button>
+        <div className="flex items-center gap-2">
+          <Link
+            href={`/tour-architect?stops=${itinerary.stops.map((s) => `${s.destinationId}:${s.nights}`).join(",")}`}
+            className="btn-secondary btn-sm"
+          >
+            Customize
+          </Link>
+          <button type="button" onClick={onRequest} className="btn-primary btn-sm">
+            Request to book
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -23,6 +23,8 @@ interface Props {
   hotels: Hotel[];
   /** Destination to add from a deep link (/tour-architect?add=ella). */
   requestedDestinationId?: string | null;
+  /** Explicit list of stops to pre-load (e.g. from an AI itinerary card). */
+  initialStops?: { destinationId: string; nights: number }[] | null;
 }
 
 const MIN_NIGHTS = 1;
@@ -35,14 +37,20 @@ const DEFAULT_ROUTE: [string, number][] = [
   ["galle", 1],
 ];
 
-export default function TourArchitectStudio({ destinations, hotels, requestedDestinationId }: Props) {
+export default function TourArchitectStudio({ destinations, hotels, requestedDestinationId, initialStops }: Props) {
   const byId = useMemo(() => new Map(destinations.map((d) => [d.id, d])), [destinations]);
   const defaultHotelFor = (destinationId: string) =>
     (hotels.find((h) => h.destinationId === destinationId && h.tier === "superior") ?? hotels.find((h) => h.destinationId === destinationId))?.id ?? null;
 
-  const [stops, setStops] = useState<ArchitectStop[]>(() =>
-    DEFAULT_ROUTE.filter(([id]) => byId.has(id)).map(([id, nights]) => ({ destinationId: id, nights, hotelId: defaultHotelFor(id) }))
-  );
+  const [stops, setStops] = useState<ArchitectStop[]>(() => {
+    if (initialStops && initialStops.length > 0) {
+      const valid = initialStops.filter((s) => byId.has(s.destinationId));
+      if (valid.length > 0) {
+        return valid.map((s) => ({ destinationId: s.destinationId, nights: s.nights, hotelId: defaultHotelFor(s.destinationId) }));
+      }
+    }
+    return DEFAULT_ROUTE.filter(([id]) => byId.has(id)).map(([id, nights]) => ({ destinationId: id, nights, hotelId: defaultHotelFor(id) }));
+  });
   const [activeIndex, setActiveIndex] = useState(0);
   const [adults, setAdults] = useState(2);
   const [children, setChildren] = useState(0);

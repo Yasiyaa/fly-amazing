@@ -8,7 +8,7 @@ import { clientIp, hashIp, isSameOriginJson, rateLimit } from "@/lib/rateLimit";
 export const runtime = "nodejs";
 export const maxDuration = 60;
 
-const MODEL = "claude-opus-5-5";
+const MODEL = process.env.ANTHROPIC_MODEL || "claude-3-5-sonnet-20241022";
 const MAX_TOOL_ROUNDS = 4;
 const MAX_TOKENS = 3000;
 const MAX_USER_MESSAGES_PER_SESSION = 40;

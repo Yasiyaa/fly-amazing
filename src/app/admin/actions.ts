@@ -5,7 +5,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { getSessionClient, getStaffUser } from "@/lib/supabase/session";
-import { sendStatusEmail } from "@/lib/emailService";
+import { sendBookingEmails, sendStatusEmail } from "@/lib/emailService";
 import { BOOKING_STATUS_LABELS, type BookingStatus } from "@/lib/types";
 import { rateLimit } from "@/lib/rateLimit";
 
@@ -127,6 +127,37 @@ export async function updateBooking(_: ActionState, formData: FormData): Promise
   }
 }
 
+export async function resendBookingEmail(_: ActionState, formData: FormData): Promise<ActionState> {
+  try {
+    const { db } = await requireStaff();
+    const id = z.string().uuid().parse(formData.get("id"));
+    const { data: b, error } = await db.from("bookings").select("*").eq("id", id).single();
+    if (error || !b) throw new Error("Booking not found.");
+
+    await sendBookingEmails({
+      reference: b.reference,
+      tourTitle: b.tour_title,
+      tourSlug: b.tour_slug ?? null,
+      leadName: b.lead_name,
+      email: b.email,
+      phone: b.phone,
+      country: b.country ?? "",
+      startDate: b.start_date ?? null,
+      adults: b.adults,
+      children: b.children,
+      tierLabel: b.tier ?? null,
+      totalUSD: Number(b.price_total_usd),
+      depositUSD: Number(b.deposit_usd),
+      payInFull: b.status === "paid" || b.status === "completed",
+      notes: b.notes ?? "",
+      itineraryLines: [],
+    });
+    return { ok: true, message: "Confirmation email resent to traveller." };
+  } catch (error) {
+    return fail(error);
+  }
+}
+
 export async function updateEnquiryStatus(formData: FormData) {
   const { db } = await requireStaff();
   const id = z.string().uuid().parse(formData.get("id"));
@@ -191,6 +222,94 @@ export async function saveTour(_: ActionState, formData: FormData): Promise<Acti
   } catch (error) {
     return fail(error);
   }
+}
+
+const createTourSchema = z.object({
+  slug: z.string().regex(/^[a-z0-9-]+$/).min(3).max(120),
+  title: z.string().min(3).max(160),
+  tagline: z.string().max(300).default(""),
+  summary: z.string().max(3000).default(""),
+  duration_days: z.coerce.number().int().min(1).max(30).default(7),
+  price_comfort_usd: z.coerce.number().int().min(0).max(100000).default(1200),
+  price_superior_usd: z.coerce.number().int().min(0).max(100000).default(1600),
+  price_luxury_usd: z.coerce.number().int().min(0).max(100000).default(2800),
+  best_season: z.string().max(80).default("Year-round"),
+  hero_image: mediaUrl("Main photo").default("/images/posters/south-coast-beach.jpg"),
+});
+
+export async function createTour(_: ActionState, formData: FormData): Promise<ActionState> {
+  let slug = "";
+  try {
+    const { db } = await requireStaff();
+    const input = createTourSchema.parse({
+      slug: formData.get("slug"),
+      title: formData.get("title"),
+      tagline: formData.get("tagline") || "",
+      summary: formData.get("summary") || "",
+      duration_days: formData.get("durationDays") || 7,
+      price_comfort_usd: formData.get("priceComfort") || 0,
+      price_superior_usd: formData.get("priceSuperior") || 0,
+      price_luxury_usd: formData.get("priceLuxury") || 0,
+      best_season: formData.get("bestSeason") || "Year-round",
+      hero_image: formData.get("heroImage") || "/images/posters/south-coast-beach.jpg",
+    });
+    slug = input.slug;
+
+    const { error } = await db.from("tours").insert({
+      slug: input.slug,
+      title: input.title,
+      tagline: input.tagline,
+      summary: input.summary,
+      kind: "tour",
+      duration_days: input.duration_days,
+      themes: ["culture"],
+      route: [],
+      destination_ids: [],
+      best_season: input.best_season,
+      season_months: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+      price_comfort_usd: input.price_comfort_usd,
+      price_superior_usd: input.price_superior_usd,
+      price_luxury_usd: input.price_luxury_usd,
+      highlights: [],
+      inclusions: [
+        "Private air-conditioned vehicle with an English-speaking chauffeur-guide for the whole tour",
+        "Hotels as listed (or similar) with daily breakfast",
+        "Airport pick-up and drop-off",
+        "Fuel, highway tolls, parking and driver meals & accommodation",
+        "24/7 support from our Colombo team",
+        "No commission stops: your guide never takes you shopping for commission",
+      ],
+      exclusions: [
+        "International flights and Sri Lanka ETA visa fee",
+        "Entrance fees to sites and national parks",
+        "Travel insurance",
+        "Tips and personal expenses",
+      ],
+      hero_image: input.hero_image,
+      gallery: [],
+      published: false,
+      featured: false,
+      sort_order: 99,
+    });
+    if (error) {
+      if (error.code === "23505") throw new Error(`A tour with slug "${input.slug}" already exists.`);
+      throw error;
+    }
+    refreshSite();
+  } catch (error) {
+    return fail(error);
+  }
+  redirect(`/admin/tours/${slug}`);
+}
+
+export async function deleteTour(formData: FormData) {
+  const { db } = await requireStaff();
+  const slug = z.string().regex(/^[a-z0-9-]+$/).parse(formData.get("slug"));
+  await db.from("tour_days").delete().eq("tour_slug", slug);
+  const { error } = await db.from("tours").delete().eq("slug", slug);
+  if (error) throw error;
+  refreshSite();
+  redirect("/admin/tours");
 }
 
 // --- Media ------------------------------------------------------------------

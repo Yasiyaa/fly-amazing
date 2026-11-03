@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useLayoutEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-const SEEN_KEY = "fa-intro-seen";
+const SEEN_KEY = "awt-intro-seen";
 const INTRO_MS = 1900;
 
 // Layout effect on the client so repeat visits hide the curtain before first paint

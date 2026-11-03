@@ -5,6 +5,7 @@ import { createClient } from "@supabase/supabase-js";
 import { DESTINATIONS } from "../src/data/seed/destinations.ts";
 import { HOTELS } from "../src/data/seed/hotels.ts";
 import { TOURS } from "../src/data/seed/tours.ts";
+import { DEFAULT_SETTINGS } from "../src/lib/site.ts";
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -115,6 +116,24 @@ await upsert(
     }))
   ),
   "tour_slug,day"
+);
+
+await upsert(
+  "site_settings",
+  [
+    {
+      key: "contact",
+      value: {
+        phone: DEFAULT_SETTINGS.phone,
+        whatsapp: DEFAULT_SETTINGS.whatsapp,
+        email: DEFAULT_SETTINGS.email,
+        address: DEFAULT_SETTINGS.address,
+        sltdaLicence: DEFAULT_SETTINGS.sltdaLicence,
+      },
+    },
+    { key: "hero_videos", value: DEFAULT_SETTINGS.heroVideos },
+  ],
+  "key"
 );
 
 console.log("Done.");
